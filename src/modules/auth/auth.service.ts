@@ -1,27 +1,38 @@
 import { Injectable } from '@nestjs/common';
 import { UserDto } from "../users/dto/user.dto";
 import { UsersService } from '../users/users.service';
+import { UserLoginDto } from "./dto/user-login.dto";
+import { IsNumber } from "class-validator";
 
 @Injectable()
 export class AuthService {
   constructor(
     private UsersService: UsersService,
   ) {}
- async login(data: UserDto) {
-   let user = {}
 
-    if (data.login) {
-       user = await this.UsersService.findByLogin(data.login)
-    }
+  async login(data: UserLoginDto) {
+
+   const user = await this.UsersService.findByEmail(data.email)
+
+    console.log(user);
+
+    // const parseDataPassword = data.email
+    // const parseUserPassword = user.password
+
+    return  user;
+  }
+ async registration(data: UserDto) {
+   let user = {}
 
    if (data.email) {
      user = await this.UsersService.findByEmail(data.email)
    }
 
+
    const parseDataPassword = data.email
    // const parseUserPassword = user.password
-
-    return 'login AuthService '+ user;
+   console.log(typeof data.password);
+    return  user;
   }
 
 }

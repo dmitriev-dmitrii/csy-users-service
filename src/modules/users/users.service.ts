@@ -11,7 +11,7 @@ export class UsersService {
     return `This action returns all users`;
   }
   async findById(id: number) {
-    return `This action returns a #${id} user`;
+    return `id  is ${typeof id}  ${id}`;
   }
   async findByName(name: string) {
     return `This action returns a #${name} user`;
