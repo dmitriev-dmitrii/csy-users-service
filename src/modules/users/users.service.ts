@@ -19,8 +19,11 @@ export class UsersService {
   async findByLogin(login: string) {
     return `login : ${login}`;
   }
-  async findByEmail(email: string) {
-    return `This action returns a  email #${email} user`;
+  async findByEmail(email: string):Promise<UserDto> {
+    return {login:'mr.hui',
+      password:'Hui664002',
+      email:'mr.hui@rambler.ru'
+    }
   }
   async updateById(id: number, updateUserDto: UserDto) {
     return `This action updates a #${id} user`;
