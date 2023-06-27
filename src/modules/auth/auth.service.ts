@@ -3,12 +3,12 @@ import { UserDto } from "../users/dto/user.dto";
 import { UsersService } from '../users/users.service';
 import { UserLoginDto } from "./dto/user-login.dto";
 import { IsNumber } from "class-validator";
-import { JwtService } from '@nestjs/jwt';
+
 @Injectable()
 export class AuthService {
   constructor(
     private UsersService: UsersService,
-    private jwtService: JwtService
+
   ) {}
 
   async login(data: UserLoginDto) {
