@@ -6,10 +6,10 @@ const validationPipeConfig = {
   // whitelist: true,
   // forbidNonWhitelisted: true,
   // disableErrorMessages: process.env.NODE_ENV === 'PRODUCTION' ? true : false,
-}
+};
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.useGlobalPipes(new ValidationPipe( validationPipeConfig) );
+  app.useGlobalPipes(new ValidationPipe(validationPipeConfig));
   app.enableCors();
   app.setGlobalPrefix('api/users/');
 

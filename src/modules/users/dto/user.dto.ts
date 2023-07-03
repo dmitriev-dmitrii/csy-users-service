@@ -1,16 +1,15 @@
 import { IsEmail, IsNumber, IsString, Min, MinLength } from "class-validator";
-import { Transform } from "class-transformer";
+
 
 export class UserDto {
   @IsString()
-  login:string
+  login: string;
 
   @IsEmail()
   email: string;
   @IsString()
   @MinLength(10)
-  password:string
-
+  password: string;
 
   // @Transform(({ value }) => parseInt(value))
 

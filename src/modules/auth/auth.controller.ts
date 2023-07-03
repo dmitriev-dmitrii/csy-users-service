@@ -1,7 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UserDto } from '../users/dto/user.dto';
-import { UserLoginDto } from "./dto/user-login.dto";
+import { UserLoginDto } from './dto/user-login.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -24,5 +32,4 @@ export class AuthController {
   // findOne(@Param('id') id: string) {
   //   return this.usersService.findOne(+id);
   // }
-
 }
