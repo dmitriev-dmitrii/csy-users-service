@@ -1,8 +1,7 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { UserDto } from '../users/dto/user.dto';
 import { UsersService } from '../users/users.service';
 import { UserLoginDto } from './dto/user-login.dto';
-import { IsNumber } from 'class-validator';
 
 @Injectable()
 export class AuthService {
