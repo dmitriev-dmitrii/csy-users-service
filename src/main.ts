@@ -15,5 +15,4 @@ async function bootstrap() {
 }
 bootstrap().then(() => {
   console.log(`app listen: http://localhost:${APP_PORT}/${appPrefix}`);
-  console.log(`app listen: http://localhost:${APP_PORT}/${appPrefix}`);
 });

@@ -33,4 +33,15 @@ export class AuthService {
 
     return user;
   }
+  async changePassword(payload: UserRegistrationCandidateDto) {
+    const user = {};
+    //
+    // if (payload.email) {
+    //   user = await this.UsersService.findByEmail(payload.email);
+    // }
+
+    // const parseUserPassword = user.password
+
+    return user;
+  }
 }
