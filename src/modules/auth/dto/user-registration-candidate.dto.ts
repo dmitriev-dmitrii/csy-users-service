@@ -1,7 +1,7 @@
-import { UserDto } from '@modules/users/dto/user.dto';
+import { UserDto } from '../../users/dto/user.dto';
 import { IntersectionType, PickType, OmitType } from '@nestjs/mapped-types';
 
-export class UserLoginDto extends PickType(UserDto, [
+export class UserRegistrationCandidateDto extends PickType(UserDto, [
   'login',
   'email',
   'password',
