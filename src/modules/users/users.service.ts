@@ -1,13 +1,21 @@
 import { Injectable } from '@nestjs/common';
 
 import { UserDto } from './dto/user.dto';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { User, UserDocument } from '@modules/users/schemas/user.schema';
 
 @Injectable()
 export class UsersService {
-  async  create(data: UserDto) {
-    return `This action returns all users`;
+  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
+  async createUser(payload: UserDto) {
+    const email = { payload };
+    // if () {
+    //
+    // }
+    return email;
   }
-  async  findAll() {
+  async findAll() {
     return `This action returns all users`;
   }
   async findById(id: number) {
@@ -19,11 +27,8 @@ export class UsersService {
   async findByLogin(login: string) {
     return `login : ${login}`;
   }
-  async findByEmail(email: string):Promise<UserDto> {
-    return {login:'mr.hui',
-      password:'Hui664002',
-      email:'mr.hui@rambler.ru'
-    }
+  async findByEmail(email: string): Promise<any> {
+    return email;
   }
   async updateById(id: number, updateUserDto: UserDto) {
     return `This action updates a #${id} user`;
@@ -32,5 +37,4 @@ export class UsersService {
   async remove(id: number) {
     return `This action removes a #${id} user`;
   }
-
 }

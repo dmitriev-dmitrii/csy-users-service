@@ -11,7 +11,7 @@ export class AuthService {
   async login(payload: UserLoginDto) {
     const user = await this.UsersService.findByEmail(payload.email);
 
-    console.log(user);
+    // console.log(user);
 
     // const parsepayloadPassword = payload.email
     // const parseUserPassword = user.password
@@ -23,14 +23,7 @@ export class AuthService {
     return user;
   }
   async registration(payload: UserRegistrationCandidateDto) {
-    let user = {};
-
-    if (payload.email) {
-      user = await this.UsersService.findByEmail(payload.email);
-    }
-
-    // const parseUserPassword = user.password
-
+    const user = await this.UsersService.createUser(payload);
     return user;
   }
   async changePassword(payload: UserRegistrationCandidateDto) {
