@@ -13,7 +13,8 @@
     "paths": {
       "@src/*": [ "src/*" ],
       "@modules/*": [ "src/modules/*" ],
-      "@config/*": [ "src/config/*" ]
+      "@config/*": [ "src/config/*" ],
+      "@schemas/*": [ "src/schemas/*" ]
     },
     "incremental": true,
     "skipLibCheck": true,
