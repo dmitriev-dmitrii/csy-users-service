@@ -21,7 +21,7 @@ export class UsersController {
   }
 
   @Get(':id')
-  findById(@Param('id') id: number) {
+  findById(@Param('id') id: string) {
     return this.usersService.findById(id);
   }
 
@@ -33,10 +33,10 @@ export class UsersController {
   // findByEmail(@Param('id') id: string) {
   //   return this.usersService.findOne(+id);
   // }
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() UserDto: UserDto) {
-    return this.usersService.updateById(+id, UserDto);
-  }
+  // @Patch(':id')
+  // update(@Param('id') id: string, @Body() UserDto: UserDto) {
+  //   return this.usersService.updateById(+id, UserDto);
+  // }
 
   // @Delete(':id')
   // remove(@Param('id') id: string) {

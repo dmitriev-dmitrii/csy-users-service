@@ -2,6 +2,7 @@ version: "3.8"
 
 services:
   mongodb:
+    container_name: csy-users-service-db
     image: mongo:5.0.19
     restart: unless-stopped
     env_file: ./.env
@@ -9,7 +10,7 @@ services:
       - MONGO_INITDB_ROOT_USERNAME=$DATABASE_USER
       - MONGO_INITDB_ROOT_PASSWORD=$DATABASE_PASSWORD
     ports:
-      - "$DATABASE_PORT:27017"
+      - ${DATABASE_PORT}:27017
     volumes:
       - db:/data/db
 #  app:
