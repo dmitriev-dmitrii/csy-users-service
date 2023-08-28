@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
+import { IsEmail, MinLength } from 'class-validator';
 
 export type UserDocument = User & Document;
 @Schema()
@@ -8,15 +9,14 @@ export class User {
   // @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Role' })
   // role: Role;
 
-  @Prop()
   // name: string;
   @Prop()
   login: string;
 
-  @Prop({ required: true })
+  @IsEmail({}, { message: 'Email is not valid' })
   email: string;
 
-  @Prop()
+  @MinLength(10)
   password: string;
 }
 

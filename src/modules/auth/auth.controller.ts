@@ -3,12 +3,13 @@ import { AuthService } from './auth.service';
 import { AuthLoginDto } from './dto/auth-login.dto';
 import { AuthRegistrationDto } from './dto/auth-registration.dto';
 import { AuthLogoutDto } from '@modules/auth/dto/auth-logout.dto';
+import { User } from '@schemas/user.schema';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
   @Post('registration')
-  registration(@Body() payload: AuthRegistrationDto) {
+  registration(@Body() payload: AuthRegistrationDto): Promise<User> {
     return this.authService.registration(payload);
   }
   @Post('login')

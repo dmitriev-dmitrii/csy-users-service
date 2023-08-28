@@ -1,11 +1,22 @@
 import { Injectable } from '@nestjs/common';
-import { AuthLoginDto } from './dto/auth-login.dto';
 import { AuthRegistrationDto } from './dto/auth-registration.dto';
+import { InjectModel } from '@nestjs/mongoose';
+import { User, UserDocument } from '@schemas/user.schema';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class AuthService {
-  registration(payload) {
-    return 'This action adds a new auth';
+  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
+  async registration(payload: AuthRegistrationDto) {
+    // const isEmailExists = await this.userModel.findOne({
+    //   email: payload.email,
+    // });
+    //
+    // if (isEmailExists) {
+    //   return;
+    // }
+
+    return this.userModel.create(payload);
   }
 
   login(payload) {

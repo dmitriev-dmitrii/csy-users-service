@@ -8,7 +8,6 @@ export class UserDto {
   email: string;
 
   @IsString()
-  @MinLength(10)
   password: string;
 
   // @Transform(({ value }) => parseInt(value))
