@@ -1,4 +1,4 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, HttpException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthLoginDto } from './dto/auth-login.dto';
 import { AuthRegistrationDto } from './dto/auth-registration.dto';
@@ -9,7 +9,9 @@ import { User } from '@schemas/user.schema';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
   @Post('registration')
-  registration(@Body() payload: AuthRegistrationDto): Promise<User> {
+  registration(
+    @Body() payload: AuthRegistrationDto,
+  ): Promise<User | HttpException> {
     return this.authService.registration(payload);
   }
   @Post('login')
