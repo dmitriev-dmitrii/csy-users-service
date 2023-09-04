@@ -1,4 +1,6 @@
-import mongoose, {Schema} from 'mongoose'
+import mongoose,{Schema}  from 'mongoose'
+import {mongooseUniqIndexErrorsParser, mongooseValidationErrorsParser} from "../utils/mongooseErrParser";
+import {log} from "util";
 
 const options = {
     collection: 'users',
@@ -12,7 +14,7 @@ const options = {
     }
 }
 
-const  userSchema = new Schema({
+const  UserSchema = new Schema({
 
     id:{
         type:Schema.Types.ObjectId
@@ -23,7 +25,18 @@ const  userSchema = new Schema({
         required: true,
         index: true,
         unique: true,
-        // enum: { values: ['admin'], message: '{VALUE} is not supported' }
+        minlength:[2,'to short login'],
+
+        validate: {
+            // @ts-ignore
+            validator: (value) => {
+                return !['admin'].includes(value)
+            },
+            // @ts-ignore
+            message: (prop)=>{
+                return `${prop.value} is bad name`
+            }
+        }
     },
     email: {
         type: String,
@@ -31,10 +44,12 @@ const  userSchema = new Schema({
         index: true,
         lowercase:true,
         trim:true,
-        required: [true, "name required"],
-        minlength:[3,'hui'],
+
+        required: [true, "email required"],
+        // minlength:[3,'hui'],
+        // match:[/^[A-Za-z0-9]+$/,"passwordIncorrect"],
         // TODO добавить регулярку
-        // maxlength:54,
+        maxlength:54,
         // default: ""
     },
     password:{
@@ -63,28 +78,48 @@ const  userSchema = new Schema({
 
 // https://mongoosejs.com/docs/api/error.html
 // https://mongoosejs.com/docs/middleware.html
-const UserModel = mongoose.model('User', userSchema);
 
 // UserModel.createIndexes()
+// @ts-ignore
+UserSchema.pre('validate', { document: true, query: true },(next,xz) => {
+
+    console.log(next, xz,'validate')
+    next()
+    // if(err.name === 'ValidationError') {
+    //     const { errors } = err
+    //     next( mongooseValidationErrorsParser(errors) )
+    //     return
+    // }
+
+
+});
+// @ts-ignore
+UserSchema.post('save', (err, payload, next)=> {
+
+    if (err.code === 11000) {
+        next( mongooseUniqIndexErrorsParser(err) )
+        return
+    }
+
+    next();
+});
 
 // @ts-ignore
-// userSchema.post('save', function(error, doc, next) {
-//     if ( error.code === 11000) {
-//         console.log('asd')
-//         next(new Error('There was a duplicate key error'));
-//     } else {
-//         next(error);
-//     }
-// });
+
+UserSchema.post('validate', (err, _ , next) => {
 
 
-// userSchema.post('validate', function(doc,e) {
-//     console.log(doc)
-//     // console.log('%s has been validated (but not saved yet)', doc._id);
-//     // e()
-// });
 
+    if(err.name === 'ValidationError') {
+        const { errors } = err
+        next( mongooseValidationErrorsParser(errors) )
+        return
+    }
 
+    next()
+});
+
+const UserModel = mongoose.model('User', UserSchema);
 export default UserModel;
 
 

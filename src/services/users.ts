@@ -11,10 +11,12 @@ import User from "../models/user";
 
     create: async ( payload= {} ) => {
         try {
-          return  await   UserModel.create(payload)
+          return  await UserModel.create(payload)
         }
         catch (err) {
-         return err
+
+            return  err
+            // throw err
         }
     },
 
@@ -34,7 +36,6 @@ import User from "../models/user";
 
              if (login) {
                 user = await UserModel.findOne ( {login : payload.login} )
-
              }
 
              if (email && !user ) {
