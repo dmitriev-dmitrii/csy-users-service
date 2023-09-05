@@ -2,9 +2,8 @@ import {ObjectId} from "mongoose";
 import UserModel from '../models/user'
 import User from "../models/user";
 
-
-
  const UserService  = {
+
      index: async ( ) => {
          return UserModel.find({});
      },
@@ -14,11 +13,18 @@ import User from "../models/user";
           return  await UserModel.create(payload)
         }
         catch (err) {
-
-            return  err
-            // throw err
+            throw err
         }
     },
+
+     // update: async ( payload= {} ) => {
+     //     try {
+     //         return  await UserModel.create(payload)
+     //     }
+     //     catch (err) {
+     //         throw err
+     //     }
+     // },
 
      login: async ( payload= {
          email:'',
@@ -57,8 +63,9 @@ import User from "../models/user";
              return   await UserModel.findById(id);
          }
          catch (err) {
-         return null
+            return null
         }
-     }
-}
+     },
+
+ }
 export default UserService

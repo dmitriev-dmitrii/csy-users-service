@@ -9,7 +9,7 @@ const options = {
     // autoIndex: false,
     versionKey: false,
     id:true,
-    // minimize:false,
+    minimize:false,
     timestamps: {
         createdAt:true,
         updatedAt:true,
@@ -63,20 +63,8 @@ const  UserSchema = new Schema({
         // match:[/^[A-Za-z0-9]+$/,"passwordIncorrect"],
         required:[true,"password Required"]
     },
-    // phone: {
-    //     type: String,
-    //     validate: {
-    //         // @ts-ignore
-    //         validator: function(v) {
-    //             return /\d{3}-\d{3}-\d{4}/.test(v);
-    //         },
-    //         // @ts-ignore
-    //         message: props => `${props.value} is not a valid phone number!`
-    //     },
-    //     required: [true, 'User phone number required']
-    // }
-
 },options);
+
 // https://github.com/mongoose-unique-validator/mongoose-unique-validator
 UserSchema.plugin(uniqueValidator,{message: '{VALUE} is already taken '});
 // https://mongoosejs.com/docs/api/error.html
