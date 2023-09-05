@@ -26,4 +26,3 @@ dataBaseConnect().then(()=>{
   console.log(`app listen http://localhost:${APP_PORT}`);
 })
 
-

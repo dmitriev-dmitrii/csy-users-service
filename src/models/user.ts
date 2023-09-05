@@ -1,6 +1,8 @@
 import mongoose,{Schema}  from 'mongoose'
-import {mongooseUniqIndexErrorsParser, mongooseValidationErrorsParser} from "../utils/mongooseErrParser";
-import {log} from "util";
+import {mongooseValidationErrorsParser} from "../utils/mongooseErrParser";
+
+var uniqueValidator = require('mongoose-unique-validator');
+ // TODO выпилить mongoose-unique-validator
 
 const options = {
     collection: 'users',
@@ -75,40 +77,15 @@ const  UserSchema = new Schema({
     // }
 
 },options);
-
+// https://github.com/mongoose-unique-validator/mongoose-unique-validator
+UserSchema.plugin(uniqueValidator,{message: '{VALUE} is already taken '});
 // https://mongoosejs.com/docs/api/error.html
 // https://mongoosejs.com/docs/middleware.html
 
-// UserModel.createIndexes()
-// @ts-ignore
-UserSchema.pre('validate', { document: true, query: true },(next,xz) => {
-
-    console.log(next, xz,'validate')
-    next()
-    // if(err.name === 'ValidationError') {
-    //     const { errors } = err
-    //     next( mongooseValidationErrorsParser(errors) )
-    //     return
-    // }
-
-
-});
-// @ts-ignore
-UserSchema.post('save', (err, payload, next)=> {
-
-    if (err.code === 11000) {
-        next( mongooseUniqIndexErrorsParser(err) )
-        return
-    }
-
-    next();
-});
 
 // @ts-ignore
 
 UserSchema.post('validate', (err, _ , next) => {
-
-
 
     if(err.name === 'ValidationError') {
         const { errors } = err

@@ -6,11 +6,15 @@
         },{})
 }
 
- export const mongooseUniqIndexErrorsParser = (err:any) => {
-        const { keyValue } = err
-        return    Object.entries(keyValue).reduce((acc,item)=> {
-            // @ts-ignore
-                 acc[item[0]] = `${ item[1]} - is already taken`
-                 return acc
-         },{})
- }
+
+ // export const mongooseUniqIndexErrorsParser = (err:any) => {
+
+ // TODO сейчас сделано на mongoose-unique-validator - выпилить его
+
+ //        const { keyValue } = err
+ //        return    Object.entries(keyValue).reduce((acc,item)=> {
+ //            // @ts-ignore
+ //                 acc[item[0]] = `${ item[1]} - is already taken`
+ //                 return acc
+ //         },{})
+ // }
