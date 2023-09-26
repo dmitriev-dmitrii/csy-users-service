@@ -10,6 +10,7 @@
  // export const mongooseUniqIndexErrorsParser = (err:any) => {
 
  // TODO сейчас сделано на mongoose-unique-validator - выпилить его
+ // uniqueValidator вызываеться в модели
 
  //        const { keyValue } = err
  //        return    Object.entries(keyValue).reduce((acc,item)=> {
