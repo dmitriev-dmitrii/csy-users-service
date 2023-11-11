@@ -5,7 +5,7 @@ all: up
 install : clean up
 
 up:down
-	docker compose up -d mongodb
+	docker compose up -d db
 	docker compose up app
 #up:
 #	docker compose up -d

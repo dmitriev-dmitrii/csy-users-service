@@ -1,7 +1,7 @@
 version: "3.8"
 
 services:
-  mongodb:
+  db:
     container_name: ${DB_NAME}
     image: mongo:5.0.22
     restart: unless-stopped
@@ -16,14 +16,14 @@ services:
   app:
     container_name: ${APP_NAME}
     depends_on:
-      - mongodb
+      - db
     build: ./
     restart: unless-stopped
     env_file: ./.env
     ports:
       - ${APP_PORT}:${APP_PORT}
     environment:
-      - DB_URL=mongodb
+      - DB_URL=db
       - DB_PORT=$MONGODB_PORT
 #    stdin_open: true
 #    tty: true
