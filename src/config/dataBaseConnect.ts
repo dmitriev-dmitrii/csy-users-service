@@ -1,15 +1,17 @@
-import { DATABASE_PORT, DATABASE_URL, DATABASE_USER, DATABASE_PASSWORD } from './env';
+import { DB_PORT, DB_URL, DB_USER, DB_PASSWORD, DB_NAME } from "./env";
 import mongoose from "mongoose";
 export default async function () {
     try {
-        console.log('mongo db connect: ...')
-    const url = `mongodb://${DATABASE_USER}:${DATABASE_PASSWORD}@${DATABASE_URL}:${DATABASE_PORT}/csy-users-service?authSource=admin`;
+        // TODO вынести в utils
+        console.log(`${DB_NAME} connect: loading...`)
+
+    const url = `mongodb://${DB_USER}:${DB_PASSWORD}@${DB_URL}:${DB_PORT}/${DB_NAME}?authSource=admin`;
 
     await mongoose.connect(url);
 
-        console.log('mongo db connect: success')
+        console.log(`${DB_NAME} connect: success`)
     }   catch (err) {
-        console.log('mongo db connect: failed')
+        console.log(`${DB_NAME} connect: failed`)
         console.log(err)
         return err
     }

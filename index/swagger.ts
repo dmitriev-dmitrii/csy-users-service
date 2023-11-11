@@ -1,4 +1,4 @@
-// import { DATABASE_PORT, DATABASE_URL, DATABASE_USER, DATABASE_PASSWORD } from './env';
+// import { DB_PORT, DB_URL, DB_USER, DB_PASSWORD } from './env';
 // import swaggerUi from 'swagger-ui-express'
 // app.use('/api-docs', function(req, res, next){
 //     swaggerDocument.host = req.get('host');

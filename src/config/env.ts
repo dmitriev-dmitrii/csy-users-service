@@ -2,9 +2,10 @@ import dotenv from 'dotenv';
 dotenv.config()
 export const {
   APP_PORT,
-  DATABASE_URL,
-  DATABASE_PORT,
-  DATABASE_USER,
-  DATABASE_PASSWORD,
+  DB_URL,
+  DB_PORT,
+  DB_USER,
+  DB_PASSWORD,
+  DB_NAME
 } = process.env;
 
