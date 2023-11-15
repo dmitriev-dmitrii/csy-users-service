@@ -24,9 +24,9 @@ app.use(`${appRouterPrefix}/users`, users);
 app.use(errorMiddleware);
 
 
-const swaggerDocument = require('./swagger/swagger.json');
+// const swaggerDocument = require('./swagger/swagger.json');
 
-app.use(appRouterPrefix, swaggerUi.serve, swaggerUi.setup(swaggerDocument))
+// app.use(appRouterPrefix, swaggerUi.serve, swaggerUi.setup(swaggerDocument))
 
 
 
