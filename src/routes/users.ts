@@ -3,6 +3,11 @@ import UserService from '../services/users'
 import {constants} from "http2";
 
 const users = Router()
+
+users.get('/',  async (req,res) => {
+    res.send( await UserService.index() )
+} );
+
 users.post('/registration',  async (req,res) => {
     try {
         const { body } = req
@@ -47,9 +52,7 @@ users.post('/login',  async (req,res) => {
 //     }
 // } );
 
-users.get('/',  async (req,res) => {
-     res.send( await UserService.index() )
-} );
+
 
 users.get('/:id',  async (req,res) => {
     const { id } = req.params

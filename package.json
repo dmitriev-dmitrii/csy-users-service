@@ -3,9 +3,10 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start:dev": "nodemon index.ts",
-    "swagger-autogen": "ts-node ./swagger/index.ts",
-    "start": "tsc && node ./dist/index.js"
+    "dev": "nodemon ./src/index.ts",
+    "start:dev": "ts-node ./src/index.ts",
+    "start": "tsc && node ./dist/src/index.js",
+    "swagger-autogen": "ts-node ./swagger/index.ts"
   },
   "dependencies": {
     "cookie-parser": "1.4.4",

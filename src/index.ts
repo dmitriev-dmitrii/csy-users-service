@@ -1,9 +1,9 @@
-import { APP_PORT } from './src/config/env'
+import { APP_PORT } from './config/env'
 import express from 'express';
 import morgan  from  'morgan';
-import dataBaseConnect from "./src/config/dataBaseConnect";
-import loggerMiddleware from "./src/middlewares/logger.middleware";
-import errorMiddleware from "./src/middlewares/error.middlware";
+import dataBaseConnect from "./config/dataBaseConnect";
+import loggerMiddleware from "./middlewares/logger.middleware";
+import errorMiddleware from "./middlewares/error.middlware";
 import cookieParser  from  'cookie-parser';
 import swaggerUi from 'swagger-ui-express';
 
@@ -18,7 +18,7 @@ const appRouterPrefix = '/api'
 
 app.use(loggerMiddleware)
 
-import users from "./src/routes/users";
+import users from "./routes/users";
 app.use(`${appRouterPrefix}/users`, users);
 
 app.use(errorMiddleware);
@@ -27,12 +27,6 @@ app.use(errorMiddleware);
 // const swaggerDocument = require('./swagger/swagger.json');
 
 // app.use(appRouterPrefix, swaggerUi.serve, swaggerUi.setup(swaggerDocument))
-
-
-
-
-
-
 
 dataBaseConnect().then(()=>{
   app.listen(APP_PORT)

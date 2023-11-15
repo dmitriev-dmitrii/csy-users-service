@@ -10,27 +10,27 @@ services:
       - MONGO_INITDB_ROOT_USERNAME=${DB_USER}
       - MONGO_INITDB_ROOT_PASSWORD=${DB_PASSWORD}
     ports:
-      - ${DB_PORT}:27017
+      - ${DB_PORT}:27017 #todo поменять порт env из докера
     volumes:
       - db:/data/db
   app:
     container_name: ${APP_NAME}
+#    working_dir: /${APP_NAME}/
     depends_on:
       - db
-    build: ./
     restart: unless-stopped
     env_file: ./.env
     ports:
       - ${APP_PORT}:${APP_PORT}
     environment:
       - DB_URL=db
-      - DB_PORT=$MONGODB_PORT
-#    stdin_open: true
-#    tty: true
-#    volumes:
-#      - csy-users-service:/csy-users-service
-
+      - DB_PORT=27017
+    build:
+      context: ./
+      target: ${MODE}
+    volumes:
+      - ./src:/src
+      - ./nodemon.json:/nodemon.json
 volumes:
   db:
-#  csy-users-service:
-#  todo пoчинить  volumes app сделать hot reload
+    name: ${DB_NAME}
