@@ -1,8 +1,6 @@
 import mongoose,{Schema}  from 'mongoose'
 import {mongooseValidationErrorsParser} from "../utils/mongooseErrParser";
 
-var uniqueValidator = require('mongoose-unique-validator');
- // TODO выпилить mongoose-unique-validator
 
 const options = {
     collection: 'users',
@@ -18,10 +16,6 @@ const options = {
 
 const  UserSchema = new Schema({
 
-    id:{
-        type:Schema.Types.ObjectId
-        // для _id работает алиас id
-    },
     login: {
         type: String,
         required: true,
@@ -30,9 +24,9 @@ const  UserSchema = new Schema({
         minlength:[2,'to short login'],
 
         validate: {
-            // @ts-ignore
-            validator: (value) => {
-                return !['admin'].includes(value)
+
+            validator: (value:string) => {
+                return !['admin','hui'].includes(value)
             },
             // @ts-ignore
             message: (prop)=>{
@@ -56,17 +50,10 @@ const  UserSchema = new Schema({
     },
     password:{
         type:String,
-        // TODO добавить хешь пароля
-        maxlength:[54,"too long"],
-        minlength:[8, "tooShort"],
-        // TODO добавить регулярку
-        // match:[/^[A-Za-z0-9]+$/,"passwordIncorrect"],
         required:[true,"password Required"]
     },
 },options);
 
-// https://github.com/mongoose-unique-validator/mongoose-unique-validator
-UserSchema.plugin(uniqueValidator,{message: '{VALUE} is already taken '});
 // https://mongoosejs.com/docs/api/error.html
 // https://mongoosejs.com/docs/middleware.html
 
@@ -84,9 +71,20 @@ UserSchema.post('validate', (err, _ , next) => {
     next()
 });
 
-export const UserModel = mongoose.model('User', UserSchema);
+UserSchema.set('toJSON', {
+    transform: function (doc, payload, options) {
+        payload.id = payload._id;
+        delete payload._id;
+    }
+});
 
-
-
-
+export interface UserInterface {
+    login: string,
+    "email": string,
+    readonly "password": string,
+    readonly  'id':string
+    readonly "createdAt": string,
+    readonly  "updatedAt": string
+}
+export const UserModel = mongoose.model<UserInterface>('User', UserSchema);
 
