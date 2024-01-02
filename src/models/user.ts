@@ -72,6 +72,7 @@ UserSchema.post('validate', (err, _ , next) => {
 });
 
 UserSchema.set('toJSON', {
+    // для удобства переименовывает поле _id в id
     transform: function (doc, payload, options) {
         payload.id = payload._id;
         delete payload._id;
