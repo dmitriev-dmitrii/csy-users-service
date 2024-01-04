@@ -1,5 +1,6 @@
-import mongoose,{Schema}  from 'mongoose'
+import mongoose, { ObjectId, Schema } from "mongoose";
 import {mongooseValidationErrorsParser} from "../utils/mongooseErrParser";
+import { UserTokensInterface } from "./users-tokens";
 
 
 const options = {
@@ -82,8 +83,9 @@ UserSchema.set('toJSON', {
 export interface UserInterface {
     login: string,
     "email": string,
+    'tokens' ? : UserTokensInterface,
     readonly "password": string,
-    readonly  'id':string
+    readonly  'id': ObjectId
     readonly "createdAt": string,
     readonly  "updatedAt": string
 }
