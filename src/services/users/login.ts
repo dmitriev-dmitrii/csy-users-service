@@ -1,8 +1,7 @@
 
-import { UserInterface } from "../../models/users";
 import { UserTokensInterface , UserTokensModel } from "../../models/users-tokens";
 import { ObjectId } from "mongoose";
-
+import UserDto from './dto/UserDto'
 import {sign} from 'jsonwebtoken'
 import {
   USER_TOKEN_ACCESS_EXPIRES_TIME,
@@ -11,30 +10,30 @@ import {
   USER_TOKEN_REFRESH_KEY
 } from "../../config/env";
 
+//
+// type UserLoginPayload = Pick<UserDto , 'password'> & {login? : UserDto["login"] , email ? : UserDto["email"]  }
+// export const  userLogin = async ( payload:UserLoginPayload ) => {
+//   try {
+//     const {login, email, password} = payload
+//
+//     let user = null
+//
+//     if (!password) {
+//       return null
+//     }
+//
+//
+//     // if (user?.password === password) {
+//     //   return user
+//     // }
+//
+//   }
+//   catch (err) {
+//     return null
+//   }
+// }
 
-type UserLoginPayload = Pick<UserInterface , 'password'> & {login? : UserInterface["login"] , email ? : UserInterface["email"]  }
-export const  userLogin = async ( payload:UserLoginPayload ) => {
-  try {
-    const {login, email, password} = payload
-
-    let user = null
-
-    if (!password) {
-      return user
-    }
-
-
-    // if (user?.password === password) {
-    //   return user
-    // }
-
-  }
-  catch (err) {
-    return null
-  }
-}
-
-export const generateUserAccessTokens  = async (user:UserInterface)=> {
+export const generateUserAccessTokens  = async (user:UserDto)=> {
 
   const {id,login,email} = user
 
@@ -59,6 +58,6 @@ export const saveUserToken  = async (userId: ObjectId,refreshToken:string)=> {
     return UserTokensModel.updateOne(tokenData);
   }
 
-  return  UserTokensModel.create({ userId,refreshToken })
-
+  const tokens = await UserTokensModel.create({ userId,refreshToken })
+  return  tokens.toObject()
 }

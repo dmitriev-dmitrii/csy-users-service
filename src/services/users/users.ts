@@ -1,30 +1,19 @@
-import {ObjectId} from "mongoose";
-import { UserInterface, UserModel } from "../../models/users";
+import { ObjectId } from "mongoose";
+import { UserModel } from "../../models/users";
 import hashPassword from "./utils/hashPassword";
-import { generateUserAccessTokens } from "./login";
 
 export const  findUserById = async ( id:ObjectId | string)  => {
-    try {
-        return   await UserModel.findById(id);
-    }
-    catch (err) {
-       return null
-   }
+      return UserModel.findById(id);
 }
 
 export const  getUsersList =  async ( ) => {
-  return UserModel.find({});
+  return  UserModel.find({})
 }
 
-type UserCandidate = Pick<UserInterface , 'login'| 'email' | 'password'>
-export const  createUser =  async ( payload:UserCandidate   ) => {
+export const  createUser =  async ( {login='' ,email = "", password= ''}   ) => {
 
-    const password = await hashPassword(payload.password)
+  const hashedPassword =  await hashPassword(password)
 
-    const user =   await UserModel.create( {...payload, ...{password} } )
-
-    const tokens   =   await generateUserAccessTokens(user)
-
-    return { ...user,... tokens}
+  return await UserModel.create({ password: hashedPassword, login, email })
 }
 

@@ -72,22 +72,16 @@ UserSchema.post('validate', (err, _ , next) => {
     next()
 });
 
-UserSchema.set('toJSON', {
-    // для удобства переименовывает поле _id в id
-    transform: function (doc, payload, options) {
-        payload.id = payload._id;
-        delete payload._id;
-    }
-});
-
-export interface UserInterface {
+export interface UserDocumentI {
+    readonly  '_id': ObjectId
+    readonly  'id': ObjectId
     login: string,
     "email": string,
-    'tokens' ? : UserTokensInterface,
+    'tokens' ? : any,
     readonly "password": string,
-    readonly  'id': ObjectId
     readonly "createdAt": string,
     readonly  "updatedAt": string
 }
-export const UserModel = mongoose.model<UserInterface>('User', UserSchema);
+
+export const UserModel = mongoose.model<UserDocumentI>('User', UserSchema);
 

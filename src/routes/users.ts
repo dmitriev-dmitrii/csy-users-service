@@ -1,19 +1,31 @@
 import { Router } from "express";
 import UserService from '../services/users/index'
 import {constants} from "http2";
+import { generateUserAccessTokens } from "../services/users/login";
+import UserDto from "../services/users/dto/UserDto";
 
 const  {getUsersList,createUser,findUserById} = UserService
 
 const users = Router()
 
 users.get('/',  async (req,res) => {
-    res.send( await getUsersList() )
+    try {
+
+    const users =  await getUsersList()
+    res.send( users.map((item)=>new UserDto(item))  )
+
+    } catch (err) {
+        res.send( [] )
+    }
 } );
 
 users.post('/registration',  async (req,res) => {
     try {
         const { body } = req
-        res.send( await createUser(body)  )
+        const user = await createUser(body)
+        const tokens   =  await generateUserAccessTokens(user)
+
+        res.send(  {...new UserDto(user),...{tokens}} )
     }
     catch (err) {
         res.status(constants.HTTP_STATUS_BAD_REQUEST)
@@ -70,14 +82,20 @@ users.post('/registration',  async (req,res) => {
 
 
 users.get('/:id',  async (req,res) => {
+    try {
+
     const { id } = req.params
     const user = await findUserById(id)
 
     if (user) {
-        res.send ( user )
+        res.send ( new UserDto(user) )
         return
     }
-    res.sendStatus(constants.HTTP_STATUS_NOT_FOUND)
 
+    }
+    catch (err) {
+        console.log(err);
+        res.sendStatus(constants.HTTP_STATUS_NOT_FOUND)
+    }
 } );
 export  default users;

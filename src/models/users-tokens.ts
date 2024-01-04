@@ -1,5 +1,6 @@
 import mongoose,{Schema}  from 'mongoose'
-import { UserInterface } from "./users";
+import { UserDocumentI } from "./users";
+
 
 const options = {
     collection: 'users-tokens',
@@ -28,17 +29,10 @@ const  UserTokenSchema = new Schema({
     },
 },options);
 
-UserTokenSchema.set('toJSON', {
-    // для удобства переименовывает поле _id в id
-    transform: function (doc, payload, options) {
-        payload.id = payload._id;
-        delete payload._id;
-    }
-});
 
 export interface UserTokensInterface {
     'refreshToken':string,
-    readonly userId: Pick<UserInterface, 'id'>,
+    readonly userId: Pick<UserDocumentI, '_id'>,
     readonly 'id':string,
     readonly "createdAt": string,
     readonly  "updatedAt": string,
