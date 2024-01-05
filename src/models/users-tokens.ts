@@ -1,4 +1,4 @@
-import mongoose,{Schema}  from 'mongoose'
+import mongoose, { ObjectId, Schema } from "mongoose";
 import { UserDocumentI } from "./users";
 
 
@@ -32,8 +32,9 @@ const  UserTokenSchema = new Schema({
 
 export interface UserTokensInterface {
     'refreshToken':string,
-    readonly userId: Pick<UserDocumentI, '_id'>,
-    readonly 'id':string,
+    readonly userId: ObjectId,
+    readonly 'id':ObjectId,
+    readonly '_id':ObjectId,
     readonly "createdAt": string,
     readonly  "updatedAt": string,
 }

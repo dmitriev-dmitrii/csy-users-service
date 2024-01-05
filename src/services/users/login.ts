@@ -2,36 +2,17 @@
 import { UserTokensInterface , UserTokensModel } from "../../models/users-tokens";
 import { ObjectId } from "mongoose";
 import UserDto from './dto/UserDto'
-import {sign} from 'jsonwebtoken'
+import {sign,verify} from 'jsonwebtoken'
 import {
   USER_TOKEN_ACCESS_EXPIRES_TIME,
   USER_TOKEN_ACCESS_KEY,
   USER_TOKEN_REFRESH_EXPIRES_TIME,
   USER_TOKEN_REFRESH_KEY
 } from "../../config/env";
+import { findUserByEmail, findUserById, findUserByLogin } from "./users";
+import { hashPassword,comparePasswords } from "./utils/usersPasswordUtils";
 
-//
-// type UserLoginPayload = Pick<UserDto , 'password'> & {login? : UserDto["login"] , email ? : UserDto["email"]  }
-// export const  userLogin = async ( payload:UserLoginPayload ) => {
-//   try {
-//     const {login, email, password} = payload
-//
-//     let user = null
-//
-//     if (!password) {
-//       return null
-//     }
-//
-//
-//     // if (user?.password === password) {
-//     //   return user
-//     // }
-//
-//   }
-//   catch (err) {
-//     return null
-//   }
-// }
+
 
 export const generateUserAccessTokens  = async (user:UserDto)=> {
 
@@ -60,4 +41,45 @@ export const saveUserToken  = async (userId: ObjectId,refreshToken:string)=> {
 
   const tokens = await UserTokensModel.create({ userId,refreshToken })
   return  tokens.toObject()
+}
+
+export const  userLogin = async ( {login = '', email = '', password = ''} ) => {
+
+    let user = login ? await findUserByLogin(login) : await findUserByEmail(email)
+
+    const isEqualPasswords = await comparePasswords(password  ,user?.password)
+
+    if (isEqualPasswords) {
+      return user
+    }
+
+    return null
+
+}
+export const userLogout = async ( refreshToken='' ) => {
+
+ return  UserTokensModel.deleteOne({refreshToken})
+}
+
+export const validateRefreshToken = async ( refreshToken='' ) => {
+
+  if (!refreshToken) {
+    return null
+  }
+
+  const tokenData = await UserTokensModel.findOne({refreshToken})
+  const parsedUserData = verify(refreshToken, USER_TOKEN_REFRESH_KEY)
+
+  if (!parsedUserData || !tokenData) {
+    return null
+  }
+
+  // @ts-ignore
+  const {id} = parsedUserData
+  const {userId} = tokenData
+  if (id !== userId) {
+    return null
+  }
+
+  return  findUserById(userId);
 }
