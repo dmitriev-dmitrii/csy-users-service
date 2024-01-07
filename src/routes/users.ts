@@ -3,14 +3,14 @@ import UserService from '../services/users/index'
 import {constants} from "http2";
 import { generateUserAccessTokens, userLogin } from "../services/users/login";
 import UserDto from "../services/users/dto/UserDto";
-import { USER_TOKEN_REFRESH_EXPIRES_TIME } from "../config/env";
 import authMiddleware from "../middlewares/authMiddleware";
+import { USER_TOKEN_REFRESH_EXPIRES_TIME } from "../../config/env";
 
 const  {getUsersList,createUser,findUserById} = UserService
 
 const users = Router()
 const authHeader = 'csy-auth'
-const authCookieOptions = {maxAge:120000,httpOnly:true}
+const authCookieOptions = {maxAge: USER_TOKEN_REFRESH_EXPIRES_TIME ,httpOnly:true}
 users.get('/', authMiddleware, async (req,res) => {
     try {
 

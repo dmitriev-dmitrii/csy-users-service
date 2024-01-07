@@ -2,7 +2,6 @@ import { generateUserAccessTokens, validateRefreshToken, userLogin, userLogout }
 import { createUser, findUserById, findUserByLogin, getUsersList } from "./users";
 
  const UserService  = {
-
    userLogin,
    userLogout,
    validateRefreshToken,

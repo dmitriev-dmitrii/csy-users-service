@@ -1,8 +1,8 @@
-import { APP_PORT } from './config/env'
+import { APP_PORT } from '../config/env'
 import express from 'express';
 import morgan  from  'morgan';
 // const cors = require('cors');
-import dataBaseConnect from "./config/dataBaseConnect";
+import dataBaseConnect from "../config/dataBaseConnect";
 import loggerMiddleware from "./middlewares/loggerMiddleware";
 import errorMiddleware from "./middlewares/errorMiddlware";
 import users from "./routes/users";
