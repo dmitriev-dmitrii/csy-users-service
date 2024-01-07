@@ -2,7 +2,6 @@ import mongoose, { ObjectId, Schema } from "mongoose";
 import {mongooseValidationErrorsParser} from "../utils/mongooseErrParser";
 import { UserTokensInterface } from "./users-tokens";
 
-
 const options = {
     collection: 'users',
     // autoIndex: false,

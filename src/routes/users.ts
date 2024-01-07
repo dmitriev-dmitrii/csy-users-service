@@ -4,13 +4,14 @@ import {constants} from "http2";
 import { generateUserAccessTokens, userLogin } from "../services/users/login";
 import UserDto from "../services/users/dto/UserDto";
 import { USER_TOKEN_REFRESH_EXPIRES_TIME } from "../config/env";
+import authMiddleware from "../middlewares/authMiddleware";
 
 const  {getUsersList,createUser,findUserById} = UserService
 
 const users = Router()
 const authHeader = 'csy-auth'
 const authCookieOptions = {maxAge:120000,httpOnly:true}
-users.get('/',  async (req,res) => {
+users.get('/', authMiddleware, async (req,res) => {
     try {
 
     const users =  await getUsersList()
@@ -18,6 +19,24 @@ users.get('/',  async (req,res) => {
 
     } catch (err) {
         res.send( [] )
+    }
+} );
+
+users.get('/:id',  authMiddleware, async (req,res) => {
+    try {
+
+        const { id } = req.params
+        const user = await findUserById(id)
+
+        if (user) {
+            res.send ( new UserDto(user) )
+            return
+        }
+
+    }
+    catch (err) {
+        console.log(err);
+        res.sendStatus(constants.HTTP_STATUS_NOT_FOUND)
     }
 } );
 
@@ -71,10 +90,10 @@ users.post('/login',  async (req,res) => {
 
 } );
 
-users.post('/logout',  async (req,res) => {
+users.get('/logout',  async (req,res) => {
     try {
         const { cookies } = req
-
+        console.log(cookies[authHeader]);
         const result =   await UserService.userLogout(cookies[authHeader])
 
         res.clearCookie(authHeader)
@@ -147,21 +166,5 @@ users.get('/refresh-token',  async (req,res) => {
 
 
 
-users.get('/:id',  async (req,res) => {
-    try {
 
-    const { id } = req.params
-    const user = await findUserById(id)
-
-    if (user) {
-        res.send ( new UserDto(user) )
-        return
-    }
-
-    }
-    catch (err) {
-        console.log(err);
-        res.sendStatus(constants.HTTP_STATUS_NOT_FOUND)
-    }
-} );
 export  default users;

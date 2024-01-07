@@ -73,7 +73,7 @@ export const validateRefreshToken = async ( refreshToken='' ) => {
   if (!parsedUserData || !tokenData) {
     return null
   }
-
+// TODO разобраться с ts-ignore
   // @ts-ignore
   const {id} = parsedUserData
   const {userId} = tokenData
@@ -82,4 +82,26 @@ export const validateRefreshToken = async ( refreshToken='' ) => {
   }
 
   return  findUserById(userId);
+}
+export const validateAccessToken = async (accessToken='') => {
+  try {
+
+    if (!accessToken) {
+      return null
+    }
+
+    const parsedUserData = verify(accessToken, USER_TOKEN_ACCESS_KEY)
+    console.log('parsedUserData');
+
+    if (!parsedUserData) {
+      return null
+    }
+    // TODO разобраться с ts-ignore
+    // @ts-ignore
+    const {id} = parsedUserData
+
+    return  findUserById(id);
+  } catch (e) {
+    return null;
+  }
 }
