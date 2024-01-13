@@ -4,10 +4,10 @@ all: up
 
 install : clean up
 
-dev:down
+dev:
+	docker compose down app
 	docker compose up -d db
-	npm run dev
-up: down
+up:
 	docker compose up -d
 	@echo '${APP_NAME} : ${APP_PORT}'
 down:

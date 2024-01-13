@@ -1,15 +1,24 @@
-import { generateUserAccessTokens, validateRefreshToken, userLogin, userLogout } from "./login";
-import { createUser, findUserById, findUserByLogin, getUsersList } from "./users";
+import {
+  generateUserAccessTokens,
+  validateUserRefreshToken,
+  deleteUserToken,
+  compareUserPasswords
+} from "./login";
+import { createUser, findUserById, findUserByLogin, findUserByEmail, getUsersList } from "./users";
+
+  // userLogin,
+
 
  const UserService  = {
-   userLogin,
-   userLogout,
-   validateRefreshToken,
-   findUserByLogin,
    createUser,
-   getUsersList,
+    compareUserPasswords,
+   findUserByLogin,
    findUserById,
+   findUserByEmail,
+   getUsersList,
+   validateUserRefreshToken,
    generateUserAccessTokens,
+   deleteUserToken,
  }
 
 export default UserService

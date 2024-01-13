@@ -5,7 +5,7 @@ import UserDto from './dto/UserDto'
 import {sign,verify} from 'jsonwebtoken'
 
 import { findUserByEmail, findUserById, findUserByLogin } from "./users";
-import { hashPassword,comparePasswords } from "./utils/usersPasswordUtils";
+import { comparePasswords } from "./utils/usersPasswordUtils";
 import {
   USER_TOKEN_ACCESS_EXPIRES_TIME,
   USER_TOKEN_ACCESS_KEY,
@@ -44,25 +44,15 @@ export const saveUserToken  = async (userId: ObjectId,refreshToken:string)=> {
   return  tokens.toObject()
 }
 
-export const  userLogin = async ( {login = '', email = '', password = ''} ) => {
-
-    let user = login ? await findUserByLogin(login) : await findUserByEmail(email)
-
-    const isEqualPasswords = await comparePasswords(password  ,user?.password)
-
-    if (isEqualPasswords) {
-      return user
-    }
-
-    return null
-
+export const  compareUserPasswords = async (plaintPassword:string,hashedPassword:string)=>{
+    return  comparePasswords(plaintPassword  ,hashedPassword)
 }
-export const userLogout = async ( refreshToken='' ) => {
+export const deleteUserToken = async ( refreshToken='' ) => {
 
  return  UserTokensModel.deleteOne({refreshToken})
 }
 
-export const validateRefreshToken = async ( refreshToken='' ) => {
+export const validateUserRefreshToken = async ( refreshToken='' ) => {
 
   if (!refreshToken) {
     return null
@@ -92,7 +82,6 @@ export const validateAccessToken = async (accessToken='') => {
     }
 
     const parsedUserData = verify(accessToken, USER_TOKEN_ACCESS_KEY)
-    console.log('parsedUserData');
 
     if (!parsedUserData) {
       return null
