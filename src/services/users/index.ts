@@ -1,23 +1,21 @@
 import {
-  generateUserAccessTokens,
+  generateUserAuthTokens,
   validateUserRefreshToken,
   deleteUserToken,
   compareUserPasswords
-} from "./login";
+} from "./auth";
 import { createUser, findUserById, findUserByLogin, findUserByEmail, getUsersList } from "./users";
-
-  // userLogin,
 
 
  const UserService  = {
    createUser,
-    compareUserPasswords,
+   compareUserPasswords,
    findUserByLogin,
    findUserById,
    findUserByEmail,
    getUsersList,
    validateUserRefreshToken,
-   generateUserAccessTokens,
+   generateUserAuthTokens,
    deleteUserToken,
  }
 

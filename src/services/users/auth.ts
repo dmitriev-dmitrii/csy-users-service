@@ -7,14 +7,14 @@ import { comparePasswords } from "./utils/usersPasswordUtils";
 import { buildAccessToken, buildRefreshToken, verifyAccessToken, verifyRefreshToken } from "./utils/usersTokenUtils";
 
 
-export const generateUserAccessTokens  = async (user:UserDto)=> {
+export const generateUserAuthTokens  = async (user:UserDto)=> {
 
   const {id} = user
 
   const accessToken = await  buildAccessToken(user)
   const refreshToken = await buildRefreshToken(user)
 
-  await saveUserToken(id,refreshToken)
+  await saveUserRefreshToken(id,refreshToken)
 
   return {
     accessToken,
@@ -22,14 +22,15 @@ export const generateUserAccessTokens  = async (user:UserDto)=> {
   }
 }
 
-export const saveUserToken  = async (userId: ObjectId,refreshToken:string)=> {
+export const saveUserRefreshToken  = async (userId: ObjectId,refreshToken:string)=> {
 
   const tokenData : UserTokensInterface | null = await UserTokensModel.findOne({userId})
 
   if (!tokenData) {
-    return  UserTokensModel.create({ userId, refreshToken })
+    await UserTokensModel.create({ userId, refreshToken })
+    return
   }
-  return   UserTokensModel.updateOne({userId} , {refreshToken});
+  await   UserTokensModel.updateOne({userId} , {refreshToken});
 }
 
 export const  compareUserPasswords = async (plaintPassword:string,hashedPassword:string)=>{
@@ -70,7 +71,7 @@ export const validateAccessToken = async (accessToken='') => {
     }
 
     const parsedUserData =  verifyAccessToken(accessToken)
-    console.log(parsedUserData);
+
     if (!parsedUserData) {
       return null
     }

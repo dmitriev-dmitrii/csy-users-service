@@ -3,8 +3,11 @@ import UserService from "../services/users";
 import { constants } from "http2";
 import { USER_TOKEN_REFRESH_EXPIRES_TIME } from "../../config/env";
 import { findUserByEmail, findUserByLogin } from "../services/users/users";
+import { verifyAccessToken } from "../services/users/utils/usersTokenUtils";
 
-const USER_TOKEN_AUTH_HEADER = 'csy-auth'
+const USER_AUTH_ACCESS_TOKEN_HEADER = 'csy-auth'
+const USER_AUTH_REFRESH_TOKEN_COOKIE_KEY = 'csy-refresh'
+
 const authCookieOptions = {maxAge: USER_TOKEN_REFRESH_EXPIRES_TIME ,httpOnly: true}
 
 // @ts-ignore
@@ -36,8 +39,8 @@ const userLogin = async (req, res, next) => {
           res.status(constants.HTTP_STATUS_UNAUTHORIZED).send('неверный логин или пароль')
     }
 
-    const tokens = await UserService.generateUserAccessTokens(user)
-    res.cookie(USER_TOKEN_AUTH_HEADER, tokens.refreshToken, authCookieOptions)
+    const tokens = await UserService.generateUserAuthTokens(user)
+    res.cookie(USER_AUTH_REFRESH_TOKEN_COOKIE_KEY, tokens.refreshToken, authCookieOptions)
     res.send({ ...new UserDto(user), tokens })
 
 
@@ -48,22 +51,22 @@ const userLogin = async (req, res, next) => {
 
 }
 // @ts-ignore
-const refreshUserLoginToken =  async (req,res) => {
+const refreshUserAuthTokens =  async (req,res) => {
   try {
     const {cookies} = req
-    const token = cookies[USER_TOKEN_AUTH_HEADER]
+    const token = cookies[USER_AUTH_ACCESS_TOKEN_HEADER]
 
     if(!token) {
       res.sendStatus(constants.HTTP_STATUS_UNAUTHORIZED)
     }
 
-    const user = await UserService.validateUserRefreshToken(cookies[USER_TOKEN_AUTH_HEADER])
+    const user = await UserService.validateUserRefreshToken(cookies[USER_AUTH_ACCESS_TOKEN_HEADER])
 
     if (user) {
 
-      const tokens = await UserService.generateUserAccessTokens(user)
+      const tokens = await UserService.generateUserAuthTokens(user)
 
-      res.cookie(USER_TOKEN_AUTH_HEADER,tokens.refreshToken,authCookieOptions)
+      res.cookie(USER_AUTH_ACCESS_TOKEN_HEADER,tokens.refreshToken,authCookieOptions)
       res.send(  {...new UserDto(user),tokens} )
 
       return
@@ -71,9 +74,9 @@ const refreshUserLoginToken =  async (req,res) => {
 
     // TODO доделать
     // if (user) {
-    //     const tokens = await generateUserAccessTokens(user)
+    //     const tokens = await generateUserAuthTokens(user)
     //
-    //     res.cookie(USER_TOKEN_AUTH_HEADER,tokens.refreshToken,authCookieOptions)
+    //     res.cookie(USER_AUTH_ACCESS_TOKEN_HEADER,tokens.refreshToken,authCookieOptions)
     //
     //     return
     // }
@@ -91,14 +94,18 @@ const refreshUserLoginToken =  async (req,res) => {
 const userLogout = async (req,res) => {
   try {
     const { cookies } = req
-    const token = cookies[USER_TOKEN_AUTH_HEADER]
-    const result =   await UserService.deleteUserToken(token)
+    // const accessToken = [USER_AUTH_ACCESS_TOKEN_HEADER]
+    const refreshToken = cookies[USER_AUTH_REFRESH_TOKEN_COOKIE_KEY]
 
-    res.clearCookie(USER_TOKEN_AUTH_HEADER)
+    const result =   await UserService.deleteUserToken(refreshToken)
+    // TODO проверять удалился ли токен ?
+      res.clearCookie( USER_AUTH_REFRESH_TOKEN_COOKIE_KEY )
+
     res.send(result)
-  }catch (e) {
 
-    res.sendStatus(constants.HTTP_STATUS_UNAUTHORIZED)
+  }catch (e) {
+    console.log(e);
+    res.sendStatus(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR);
   }
 
 }
@@ -109,9 +116,9 @@ const userLogout = async (req,res) => {
   try {
     const { body } = req
     const user = await UserService.createUser(body)
-    const tokens   =  await UserService.generateUserAccessTokens(user)
+    const tokens   =  await UserService.generateUserAuthTokens(user)
 
-    res.cookie(USER_TOKEN_AUTH_HEADER,tokens.refreshToken,authCookieOptions)
+    res.cookie(USER_AUTH_REFRESH_TOKEN_COOKIE_KEY,tokens.refreshToken,authCookieOptions)
     res.send(  {...new UserDto(user),tokens} )
   }
   catch (err) {
@@ -164,6 +171,6 @@ export default {
   userRegistration,
   userLogin,
   userLogout,
-  refreshUserLoginToken
+  refreshUserAuthTokens
 }
 
