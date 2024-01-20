@@ -2,26 +2,19 @@
 import { UserTokensInterface , UserTokensModel } from "../../models/users-tokens";
 import { ObjectId } from "mongoose";
 import UserDto from './dto/UserDto'
-import {sign,verify} from 'jsonwebtoken'
-
 import { findUserByEmail, findUserById, findUserByLogin } from "./users";
 import { comparePasswords } from "./utils/usersPasswordUtils";
-import {
-  USER_TOKEN_ACCESS_EXPIRES_TIME,
-  USER_TOKEN_ACCESS_KEY,
-  USER_TOKEN_REFRESH_EXPIRES_TIME,
-  USER_TOKEN_REFRESH_KEY
-} from "../../../config/env";
+
+import { buildAccessToken, buildRefreshToken, verifyAccessToken, verifyRefreshToken } from "./utils/usersTokenUtils";
 
 
 
 export const generateUserAccessTokens  = async (user:UserDto)=> {
 
-  const {id,login,email} = user
+  const {id} = user
 
-  const accessToken =   sign({id,login,email}, USER_TOKEN_ACCESS_KEY, { expiresIn: USER_TOKEN_ACCESS_EXPIRES_TIME });
-
-  const refreshToken =  sign({id,login,email}, USER_TOKEN_REFRESH_KEY, { expiresIn: USER_TOKEN_REFRESH_EXPIRES_TIME });
+  const accessToken = await  buildAccessToken(user)
+  const refreshToken = await buildRefreshToken(user)
 
   await saveUserToken(id,refreshToken)
 
@@ -59,7 +52,7 @@ export const validateUserRefreshToken = async ( refreshToken='' ) => {
   }
 
   const tokenData = await UserTokensModel.findOne({refreshToken})
-  const parsedUserData = verify(refreshToken, USER_TOKEN_REFRESH_KEY)
+  const parsedUserData = verifyRefreshToken(refreshToken)
 
   if (!parsedUserData || !tokenData) {
     return null
@@ -81,7 +74,7 @@ export const validateAccessToken = async (accessToken='') => {
       return null
     }
 
-    const parsedUserData = verify(accessToken, USER_TOKEN_ACCESS_KEY)
+    const parsedUserData =  verifyAccessToken(accessToken)
 
     if (!parsedUserData) {
       return null
