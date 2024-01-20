@@ -14,7 +14,7 @@ export const buildAccessToken =  async (user:UserDto):Promise<string> => {
 
 export const buildRefreshToken =  async (user:UserDto):Promise<string> => {
   const {id,login,email} = user
-  return  sign({id,login,email}, USER_TOKEN_REFRESH_KEY, { expiresIn: USER_TOKEN_REFRESH_EXPIRES_TIME });
+  return sign({ id, login, email }, USER_TOKEN_REFRESH_KEY, { expiresIn: USER_TOKEN_REFRESH_EXPIRES_TIME });
 
 }
 

@@ -1,12 +1,10 @@
-
-import { UserTokensInterface , UserTokensModel } from "../../models/users-tokens";
+import { UserTokensInterface, UserTokensModel } from "../../models/users-tokens";
 import { ObjectId } from "mongoose";
-import UserDto from './dto/UserDto'
-import { findUserByEmail, findUserById, findUserByLogin } from "./users";
+import UserDto from "./dto/UserDto";
+import { findUserById } from "./users";
 import { comparePasswords } from "./utils/usersPasswordUtils";
 
 import { buildAccessToken, buildRefreshToken, verifyAccessToken, verifyRefreshToken } from "./utils/usersTokenUtils";
-
 
 
 export const generateUserAccessTokens  = async (user:UserDto)=> {
@@ -28,13 +26,10 @@ export const saveUserToken  = async (userId: ObjectId,refreshToken:string)=> {
 
   const tokenData : UserTokensInterface | null = await UserTokensModel.findOne({userId})
 
-  if (tokenData) {
-    tokenData.refreshToken = refreshToken
-    return UserTokensModel.updateOne(tokenData);
+  if (!tokenData) {
+    return  UserTokensModel.create({ userId, refreshToken })
   }
-
-  const tokens = await UserTokensModel.create({ userId,refreshToken })
-  return  tokens.toObject()
+  return   UserTokensModel.updateOne({userId} , {refreshToken});
 }
 
 export const  compareUserPasswords = async (plaintPassword:string,hashedPassword:string)=>{
@@ -75,7 +70,7 @@ export const validateAccessToken = async (accessToken='') => {
     }
 
     const parsedUserData =  verifyAccessToken(accessToken)
-
+    console.log(parsedUserData);
     if (!parsedUserData) {
       return null
     }

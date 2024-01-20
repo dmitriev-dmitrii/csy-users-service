@@ -32,17 +32,18 @@ const userLogin = async (req, res, next) => {
 
     const isEqualPasswords = await  UserService.compareUserPasswords(password  ,user.password)
 
-    if (isEqualPasswords) {
-      const tokens = await UserService.generateUserAccessTokens(user)
-      res.cookie(USER_TOKEN_AUTH_HEADER, tokens.refreshToken, authCookieOptions)
-      res.send({ ...new UserDto(user), tokens })
+    if (!isEqualPasswords) {
+          res.status(constants.HTTP_STATUS_UNAUTHORIZED).send('неверный логин или пароль')
     }
 
-    res.status(constants.HTTP_STATUS_UNAUTHORIZED).send('неверный логин или пароль')
+    const tokens = await UserService.generateUserAccessTokens(user)
+    res.cookie(USER_TOKEN_AUTH_HEADER, tokens.refreshToken, authCookieOptions)
+    res.send({ ...new UserDto(user), tokens })
+
 
   } catch (e) {
-
-    res.sendStatus(constants.HTTP_STATUS_UNAUTHORIZED)
+    console.log(e);
+    res.sendStatus(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
   }
 
 }
