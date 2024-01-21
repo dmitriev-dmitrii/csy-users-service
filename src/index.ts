@@ -16,11 +16,10 @@ app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(cors());
-// app.use(cors({
-//   credentials: true,
-//   origin: process.env.CLIENT_URL
-// }));
+app.use(cors({
+  credentials: true,
+  origin: 'http://localhost:5000'
+}));
 const appRouterPrefix = '/api/users'
 
 app.use(loggerMiddleware);
