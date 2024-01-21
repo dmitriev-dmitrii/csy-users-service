@@ -2,11 +2,7 @@ import UserDto from "../services/users/dto/UserDto";
 import UserService from "../services/users";
 import { constants } from "http2";
 import { USER_TOKEN_REFRESH_EXPIRES_TIME } from "../../config/env";
-import { findUserByEmail, findUserByLogin } from "../services/users/users";
-import { verifyAccessToken } from "../services/users/utils/usersTokenUtils";
-
-const USER_AUTH_ACCESS_TOKEN_HEADER = 'csy-auth'
-const USER_AUTH_REFRESH_TOKEN_COOKIE_KEY = 'csy-refresh'
+import { USER_AUTH_REFRESH_TOKEN_COOKIE_KEY } from "../constants";
 
 const authCookieOptions = {maxAge: USER_TOKEN_REFRESH_EXPIRES_TIME ,httpOnly: true}
 
@@ -50,44 +46,7 @@ const userLogin = async (req, res, next) => {
   }
 
 }
-// @ts-ignore
-const refreshUserAuthTokens =  async (req,res) => {
-  try {
-    const {cookies} = req
-    const token = cookies[USER_AUTH_ACCESS_TOKEN_HEADER]
 
-    if(!token) {
-      res.sendStatus(constants.HTTP_STATUS_UNAUTHORIZED)
-    }
-
-    const user = await UserService.validateUserRefreshToken(cookies[USER_AUTH_ACCESS_TOKEN_HEADER])
-
-    if (user) {
-
-      const tokens = await UserService.generateUserAuthTokens(user)
-
-      res.cookie(USER_AUTH_ACCESS_TOKEN_HEADER,tokens.refreshToken,authCookieOptions)
-      res.send(  {...new UserDto(user),tokens} )
-
-      return
-    }
-
-    // TODO доделать
-    // if (user) {
-    //     const tokens = await generateUserAuthTokens(user)
-    //
-    //     res.cookie(USER_AUTH_ACCESS_TOKEN_HEADER,tokens.refreshToken,authCookieOptions)
-    //
-    //     return
-    // }
-
-
-  }catch (e) {
-
-    res.sendStatus(constants.HTTP_STATUS_UNAUTHORIZED)
-  }
-
-}
 
 
 // @ts-ignore
@@ -98,7 +57,7 @@ const userLogout = async (req,res) => {
     const refreshToken = cookies[USER_AUTH_REFRESH_TOKEN_COOKIE_KEY]
 
     const result =   await UserService.deleteUserToken(refreshToken)
-    // TODO проверять удалился ли токен ?
+    // TODO проверять удалился ли токен из бд?
       res.clearCookie( USER_AUTH_REFRESH_TOKEN_COOKIE_KEY )
 
     res.send(result)
@@ -127,42 +86,74 @@ const userLogout = async (req,res) => {
   }
 
 }
+
+
+
 // @ts-ignore
- const getUserById = async (req, res, next)  => {
+const refreshUserAuthTokens =  async (req,res) => {
+  try {
+    const {cookies} = req
+    const refreshToken = cookies[USER_AUTH_REFRESH_TOKEN_COOKIE_KEY]
 
-    try {
-
-      const { id } = req.params
-
-      if (!id) {
-        res.sendStatus(constants.HTTP_STATUS_BAD_REQUEST)
-        return
-      }
-
-      const user = await UserService.findUserById(id)
-
-      if (user) {
-        res.send ( new UserDto(user) )
-        return
-      }
-
+    if(!refreshToken) {
+      res.sendStatus(constants.HTTP_STATUS_UNAUTHORIZED)
     }
-    catch (err) {
-      console.log(err);
-      res.sendStatus(constants.HTTP_STATUS_NOT_FOUND)
+
+    const user = await UserService.validateUserRefreshToken(refreshToken)
+
+    if (!user) {
+
+      res.sendStatus(constants.HTTP_STATUS_UNAUTHORIZED)
+      return
     }
+
+    const tokens = await UserService.generateUserAuthTokens(user)
+
+    res.cookie(USER_AUTH_REFRESH_TOKEN_COOKIE_KEY,tokens.refreshToken,authCookieOptions)
+    res.send(  {...new UserDto(user),tokens} )
+
+  }catch (err) {
+
+    res.sendStatus(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
+  }
 
 }
 // @ts-ignore
-   const getUsers = async (req, res, next)  => {
-        try {
+const getUsers = async (req, res, next)  => {
+  try {
 
-          const users =  await UserService.getUsersList()
-          res.send( users.map((item)=>new UserDto(item))  )
+    const users =  await UserService.getUsersList()
+    res.send( users.map((item)=>new UserDto(item))  )
 
-        } catch (err) {
-          res.send( [] )
-        }
+  } catch (err) {
+    res.send( [] )
+  }
+
+}
+// @ts-ignore
+const getUserById = async (req, res, next)  => {
+
+  try {
+
+    const { id } = req.params
+
+    if (!id) {
+      res.sendStatus(constants.HTTP_STATUS_BAD_REQUEST)
+      return
+    }
+
+    const user = await UserService.findUserById(id)
+
+    if (user) {
+      res.send ( new UserDto(user) )
+      return
+    }
+
+  }
+  catch (err) {
+    console.log(err);
+    res.sendStatus(constants.HTTP_STATUS_NOT_FOUND)
+  }
 
 }
 export default {

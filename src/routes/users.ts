@@ -8,13 +8,13 @@ const usersRouter = Router()
 
 usersRouter.get('/', authMiddleware, getUsers );
 
-// usersRouter.get('/:id',  authMiddleware, getUserById );
+usersRouter.get('/:id',  authMiddleware, getUserById );
 
 usersRouter.post('/registration', userRegistration);
 
 usersRouter.post('/login',  userLogin );
 
-usersRouter.get('/logout',  userLogout);
+usersRouter.post('/logout',  userLogout);
 
 usersRouter.get('/refresh-token', refreshUserAuthTokens );
 

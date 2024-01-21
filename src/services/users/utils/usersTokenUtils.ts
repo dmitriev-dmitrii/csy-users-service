@@ -24,6 +24,5 @@ export const verifyAccessToken = (accessToken = ''):JwtPayload | string => {
 }
 
 export const verifyRefreshToken =  (refreshToken = ''):JwtPayload | string => {
-  console.log(refreshToken);
   return  verify(refreshToken, USER_TOKEN_REFRESH_KEY)
 }
