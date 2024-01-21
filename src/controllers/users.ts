@@ -1,10 +1,10 @@
 import UserDto from "../services/users/dto/UserDto";
 import UserService from "../services/users";
 import { constants } from "http2";
-import { USER_TOKEN_REFRESH_EXPIRES_TIME } from "../../config/env";
-import { USER_AUTH_REFRESH_TOKEN_COOKIE_KEY } from "../constants";
 
-const authCookieOptions = {maxAge: USER_TOKEN_REFRESH_EXPIRES_TIME ,httpOnly: true}
+import { USER_AUTH_COOKIES_CONFIG, USER_AUTH_REFRESH_TOKEN_COOKIE_KEY } from "../constants";
+
+
 
 // @ts-ignore
 const userLogin = async (req, res, next) => {
@@ -36,10 +36,10 @@ const userLogin = async (req, res, next) => {
     }
 
     const tokens = await UserService.generateUserAuthTokens(user)
-    res.cookie(USER_AUTH_REFRESH_TOKEN_COOKIE_KEY, tokens.refreshToken, authCookieOptions)
+    res.cookie(USER_AUTH_REFRESH_TOKEN_COOKIE_KEY, tokens.refreshToken, USER_AUTH_COOKIES_CONFIG)
     res.send({ ...new UserDto(user), tokens })
 
-
+    // res.signedCookies
   } catch (e) {
     console.log(e);
     res.sendStatus(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
@@ -77,7 +77,7 @@ const userLogout = async (req,res) => {
     const user = await UserService.createUser(body)
     const tokens   =  await UserService.generateUserAuthTokens(user)
 
-    res.cookie(USER_AUTH_REFRESH_TOKEN_COOKIE_KEY,tokens.refreshToken,authCookieOptions)
+    res.cookie(USER_AUTH_REFRESH_TOKEN_COOKIE_KEY,tokens.refreshToken,USER_AUTH_COOKIES_CONFIG)
     res.send(  {...new UserDto(user),tokens} )
   }
   catch (err) {
@@ -97,20 +97,21 @@ const refreshUserAuthTokens =  async (req,res) => {
 
     if(!refreshToken) {
       res.sendStatus(constants.HTTP_STATUS_UNAUTHORIZED)
+      return
     }
 
     const user = await UserService.validateUserRefreshToken(refreshToken)
 
     if (!user) {
-
       res.sendStatus(constants.HTTP_STATUS_UNAUTHORIZED)
       return
     }
 
     const tokens = await UserService.generateUserAuthTokens(user)
 
-    res.cookie(USER_AUTH_REFRESH_TOKEN_COOKIE_KEY,tokens.refreshToken,authCookieOptions)
-    res.send(  {...new UserDto(user),tokens} )
+    res.cookie(USER_AUTH_REFRESH_TOKEN_COOKIE_KEY,tokens.refreshToken,USER_AUTH_COOKIES_CONFIG)
+
+    res.send( {...new UserDto(user),tokens}  )
 
   }catch (err) {
 

@@ -6,10 +6,6 @@ const {getUsers,userRegistration,userLogin,userLogout,refreshUserAuthTokens ,get
 
 const usersRouter = Router()
 
-usersRouter.get('/', authMiddleware, getUsers );
-
-usersRouter.get('/:id',  authMiddleware, getUserById );
-
 usersRouter.post('/registration', userRegistration);
 
 usersRouter.post('/login',  userLogin );
@@ -17,5 +13,9 @@ usersRouter.post('/login',  userLogin );
 usersRouter.post('/logout',  userLogout);
 
 usersRouter.get('/refresh-token', refreshUserAuthTokens );
+
+usersRouter.get('/', authMiddleware, getUsers );
+
+usersRouter.get('/:id',  authMiddleware, getUserById );
 
 export  default usersRouter;
