@@ -7,14 +7,16 @@ import { comparePasswords } from "./utils/usersPasswordUtils";
 import { buildAccessToken, buildRefreshToken, verifyAccessToken, verifyRefreshToken } from "./utils/usersTokenUtils";
 
 
-export const generateUserAuthTokens  = async (user:UserDto)=> {
+export const generateUserAuthTokens  = async (user:UserDto,fingerprint:any)=> {
 
   const {id} = user
+  const { hash  } = fingerprint
 
-  const accessToken = await  buildAccessToken(user)
-  const refreshToken = await buildRefreshToken(user)
+  const accessToken = buildAccessToken(user)
+  const refreshToken = buildRefreshToken({...user,...{fingerprintHash:hash}})
 
-  await saveUserRefreshToken(id,refreshToken)
+
+  await saveUserRefreshToken({userId:id, fingerprintHash :hash, refreshToken})
 
   return {
     accessToken,
@@ -22,15 +24,15 @@ export const generateUserAuthTokens  = async (user:UserDto)=> {
   }
 }
 
-export const saveUserRefreshToken  = async (userId: ObjectId,refreshToken:string)=> {
-
-  const tokenData : UserTokensInterface | null = await UserTokensModel.findOne({userId})
+export const saveUserRefreshToken  = async (payload : {userId: ObjectId, refreshToken:string, fingerprintHash:string})=> {
+  const {userId, refreshToken, fingerprintHash} = payload
+  const tokenData : UserTokensInterface | null = await UserTokensModel.findOne({fingerprintHash})
 
   if (!tokenData) {
-    await UserTokensModel.create({ userId, refreshToken })
+    await UserTokensModel.create({ userId, refreshToken , fingerprintHash })
     return
   }
-  await   UserTokensModel.updateOne({userId} , {refreshToken});
+  await   UserTokensModel.updateOne({fingerprintHash , userId} , {refreshToken});
 }
 
 export const  compareUserPasswords = async (plaintPassword:string,hashedPassword:string)=>{
@@ -41,46 +43,26 @@ export const deleteUserToken = async ( refreshToken='' ) => {
  return  UserTokensModel.deleteOne({refreshToken})
 }
 
-export const validateUserRefreshToken = async ( refreshToken='' ) => {
+export const validateUserRefreshToken = async ( refreshToken='') => {
 
-  if (!refreshToken) {
-    return null
-  }
-
-  const tokenData = await UserTokensModel.findOne({refreshToken})
-  const parsedUserData = verifyRefreshToken(refreshToken)
-
-  if (!parsedUserData || !tokenData) {
-    return null
-  }
-// TODO разобраться с ts-ignore
   // @ts-ignore
-  const {id} = parsedUserData
-  const {userId} = tokenData
-  if (id !== userId) {
-    return null
-  }
+  const {fingerprintHash}  = verifyRefreshToken(refreshToken)
+  // выбрасывает ошибку если токен протух
+  return  UserTokensModel.findOne({refreshToken,fingerprintHash})
 
-  return  findUserById(userId);
 }
-export const validateAccessToken = async (accessToken='') => {
+export const validateUserAccessToken = async (accessToken='') => {
   try {
 
     if (!accessToken) {
-      return null
+      return false
     }
 
-    const parsedUserData =  verifyAccessToken(accessToken)
-
-    if (!parsedUserData) {
-      return null
-    }
-    // TODO разобраться с ts-ignore
-    // @ts-ignore
-    const {id} = parsedUserData
-
-    return  findUserById(id);
-  } catch (e) {
-    return null;
+     verifyAccessToken(accessToken)
+    // выбрасывает ошибку если токен протух
+      return  true
+  } catch (err) {
+    // console.log('validateUserAccessToken err',err);
+      return false;
   }
 }

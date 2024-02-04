@@ -2,7 +2,8 @@ import {
   generateUserAuthTokens,
   validateUserRefreshToken,
   deleteUserToken,
-  compareUserPasswords
+  compareUserPasswords,
+  validateUserAccessToken
 } from "./auth";
 import { createUser, findUserById, findUserByLogin, findUserByEmail, getUsersList } from "./users";
 
@@ -15,6 +16,7 @@ import { createUser, findUserById, findUserByLogin, findUserByEmail, getUsersLis
    findUserByEmail,
    getUsersList,
    validateUserRefreshToken,
+   validateUserAccessToken,
    generateUserAuthTokens,
    deleteUserToken,
  }

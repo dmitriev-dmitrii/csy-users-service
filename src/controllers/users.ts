@@ -2,14 +2,19 @@ import UserDto from "../services/users/dto/UserDto";
 import UserService from "../services/users";
 import { constants } from "http2";
 
-import { USER_AUTH_COOKIES_CONFIG, USER_AUTH_REFRESH_TOKEN_COOKIE_KEY } from "../constants";
+import {
+  USER_AUTH_ACCESS_TOKEN_HEADER_KEY,
+  USER_AUTH_COOKIES_CONFIG,
+  USER_AUTH_REFRESH_TOKEN_COOKIE_KEY
+} from "../constants";
+import { validateUserAccessToken } from "../services/users/auth";
 
 
 
 // @ts-ignore
 const userLogin = async (req, res, next) => {
   try {
-    const { body } = req
+    const { body, fingerprint  } = req
     const { login = '', email = '', password = '' } = body
 
     if (!password) {
@@ -35,7 +40,7 @@ const userLogin = async (req, res, next) => {
           res.status(constants.HTTP_STATUS_UNAUTHORIZED).send('неверный логин или пароль')
     }
 
-    const tokens = await UserService.generateUserAuthTokens(user)
+    const tokens = await UserService.generateUserAuthTokens(new UserDto(user),fingerprint)
     res.cookie(USER_AUTH_REFRESH_TOKEN_COOKIE_KEY, tokens.refreshToken, USER_AUTH_COOKIES_CONFIG)
     res.send({ ...new UserDto(user), tokens })
 
@@ -53,7 +58,7 @@ const userLogin = async (req, res, next) => {
 const userLogout = async (req,res) => {
   try {
     const { cookies } = req
-    // const accessToken = [USER_AUTH_ACCESS_TOKEN_HEADER]
+    // const accessToken = [USER_AUTH_ACCESS_TOKEN_HEADER_KEY]
     const refreshToken = cookies[USER_AUTH_REFRESH_TOKEN_COOKIE_KEY]
 
     const result =   await UserService.deleteUserToken(refreshToken)
@@ -73,9 +78,9 @@ const userLogout = async (req,res) => {
  const userRegistration = async (req, res, next)  => {
 
   try {
-    const { body } = req
+    const { body , fingerprint } = req
     const user = await UserService.createUser(body)
-    const tokens   =  await UserService.generateUserAuthTokens(user)
+    const tokens   =  await UserService.generateUserAuthTokens(new UserDto(user),fingerprint)
 
     res.cookie(USER_AUTH_REFRESH_TOKEN_COOKIE_KEY,tokens.refreshToken,USER_AUTH_COOKIES_CONFIG)
     res.send(  {...new UserDto(user),tokens} )
@@ -90,32 +95,37 @@ const userLogout = async (req,res) => {
 
 
 // @ts-ignore
-const refreshUserAuthTokens =  async (req,res) => {
+const updateUserAuthTokens =  async (req,res) => {
   try {
-    const {cookies} = req
+    const {cookies,fingerprint} = req
     const refreshToken = cookies[USER_AUTH_REFRESH_TOKEN_COOKIE_KEY]
 
     if(!refreshToken) {
       res.sendStatus(constants.HTTP_STATUS_UNAUTHORIZED)
       return
     }
+    // @ts-ignore
+   const token = await UserService.validateUserRefreshToken(refreshToken)
 
-    const user = await UserService.validateUserRefreshToken(refreshToken)
+    // @ts-ignore
+    const{userId} = token
 
-    if (!user) {
+    if (!userId) {
       res.sendStatus(constants.HTTP_STATUS_UNAUTHORIZED)
       return
     }
 
-    const tokens = await UserService.generateUserAuthTokens(user)
+    const user = await UserService.findUserById(userId)
+    // @ts-ignore
+    const tokens = await UserService.generateUserAuthTokens(new UserDto(user),fingerprint)
 
     res.cookie(USER_AUTH_REFRESH_TOKEN_COOKIE_KEY,tokens.refreshToken,USER_AUTH_COOKIES_CONFIG)
-
+    // @ts-ignore
     res.send( {...new UserDto(user),tokens}  )
 
   }catch (err) {
-
-    res.sendStatus(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
+    console.log(err);
+    res.sendStatus(constants.HTTP_STATUS_UNAUTHORIZED)
   }
 
 }
@@ -163,6 +173,6 @@ export default {
   userRegistration,
   userLogin,
   userLogout,
-  refreshUserAuthTokens
+  updateUserAuthTokens
 }
 

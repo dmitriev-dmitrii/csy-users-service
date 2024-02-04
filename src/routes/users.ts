@@ -2,7 +2,7 @@ import { Router } from "express";
 import authMiddleware from "../middlewares/authMiddleware";
 import UserController from "../controllers/users";
 
-const {getUsers,userRegistration,userLogin,userLogout,refreshUserAuthTokens ,getUserById} = UserController
+const {getUsers,userRegistration,userLogin,userLogout,updateUserAuthTokens ,getUserById} = UserController
 
 const usersRouter = Router()
 
@@ -12,7 +12,7 @@ usersRouter.post('/login',  userLogin );
 
 usersRouter.post('/logout',  userLogout);
 
-usersRouter.get('/refresh-token', refreshUserAuthTokens );
+usersRouter.get('/refresh-token', updateUserAuthTokens );
 
 usersRouter.get('/', authMiddleware, getUsers );
 

@@ -20,9 +20,14 @@ const  UserTokenSchema = new Schema({
         type: String,
         required: true,
         index: true,
-        unique: true,
     },
+
     refreshToken:{
+        index: false,
+        required: true,
+        type:String,
+    },
+    fingerprintHash:{
         index: false,
         required: true,
         type:String,
@@ -37,6 +42,7 @@ export interface UserTokensInterface {
     readonly '_id':ObjectId,
     readonly "createdAt": string,
     readonly  "updatedAt": string,
+    readonly  fingerprintHash:string,
 }
 export const UserTokensModel = mongoose.model<UserTokensInterface>('UsersToken', UserTokenSchema);
 
