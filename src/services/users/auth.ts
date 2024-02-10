@@ -26,7 +26,7 @@ export const generateUserAuthTokens  = async (user:UserDto,fingerprint:any)=> {
 
 export const saveUserRefreshToken  = async (payload : {userId: ObjectId, refreshToken:string, fingerprintHash:string})=> {
   const {userId, refreshToken, fingerprintHash} = payload
-  const tokenData : UserTokensInterface | null = await UserTokensModel.findOne({fingerprintHash})
+  const tokenData : UserTokensInterface | null = await UserTokensModel.findOne({fingerprintHash,userId})
 
   if (!tokenData) {
     await UserTokensModel.create({ userId, refreshToken , fingerprintHash })
