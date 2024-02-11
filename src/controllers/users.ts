@@ -3,7 +3,7 @@ import UserService from "../services/users";
 import { constants } from "http2";
 
 import {
-  USER_AUTH_ACCESS_TOKEN_HEADER_KEY,
+  USER_AUTH_ACCESS_TOKEN_COOKIE_KEY,
   USER_AUTH_COOKIES_CONFIG,
   USER_AUTH_REFRESH_TOKEN_COOKIE_KEY
 } from "../constants";
@@ -58,7 +58,7 @@ const userLogin = async (req, res, next) => {
 const userLogout = async (req,res) => {
   try {
     const { cookies } = req
-    // const accessToken = [USER_AUTH_ACCESS_TOKEN_HEADER_KEY]
+    // const accessToken = [USER_AUTH_ACCESS_TOKEN_COOKIE_KEY]
     const refreshToken = cookies[USER_AUTH_REFRESH_TOKEN_COOKIE_KEY]
 
     const result =   await UserService.deleteUserToken(refreshToken)

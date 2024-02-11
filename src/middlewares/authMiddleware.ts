@@ -1,12 +1,13 @@
 import { NextFunction, Request, Response } from "express";
 import { constants } from "http2";
 import { validateUserAccessToken } from "../services/users/auth";
-import { USER_AUTH_ACCESS_TOKEN_HEADER_KEY } from "../constants";
+import { USER_AUTH_ACCESS_TOKEN_COOKIE_KEY } from "../constants";
 
  async function authMiddleware(req: Request, res: Response, next: NextFunction) {
      try {
-         const { headers } = req
-         const accessToken = String(headers[USER_AUTH_ACCESS_TOKEN_HEADER_KEY]);
+         const { headers ,cookies} = req
+
+         const accessToken = String(cookies[USER_AUTH_ACCESS_TOKEN_COOKIE_KEY]);
 
          if (!accessToken) {
              res.sendStatus(constants.HTTP_STATUS_UNAUTHORIZED)
