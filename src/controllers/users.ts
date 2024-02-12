@@ -104,23 +104,27 @@ const updateUserAuthTokens =  async (req,res) => {
       res.sendStatus(constants.HTTP_STATUS_UNAUTHORIZED)
       return
     }
-    // @ts-ignore
-   const token = await UserService.validateUserRefreshToken(refreshToken)
 
-    // @ts-ignore
-    const{userId} = token
+   const decodedToken = await UserService.validateUserRefreshToken(refreshToken)
 
-    if (!userId) {
+    if (!decodedToken) {
       res.sendStatus(constants.HTTP_STATUS_UNAUTHORIZED)
       return
     }
 
+    const{userId} = decodedToken
+
     const user = await UserService.findUserById(userId)
-    // @ts-ignore
+
+    if (!user) {
+      res.sendStatus(constants.HTTP_STATUS_UNAUTHORIZED)
+      return
+    }
+
     const tokens = await UserService.generateUserAuthTokens(new UserDto(user),fingerprint)
 
     res.cookie(USER_AUTH_REFRESH_TOKEN_COOKIE_KEY,tokens.refreshToken,USER_AUTH_COOKIES_CONFIG)
-    // @ts-ignore
+
     res.send( {...new UserDto(user),tokens}  )
 
   }catch (err) {
