@@ -12,7 +12,7 @@ usersRouter.post('/login',  userLogin );
 
 usersRouter.post('/logout',  userLogout);
 
-usersRouter.get('/refresh-token', updateUserAuthTokens );
+usersRouter.put('/refresh-token', updateUserAuthTokens );
 
 usersRouter.get('/', authMiddleware, getUsers );
 
