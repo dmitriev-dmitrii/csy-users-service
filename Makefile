@@ -8,7 +8,7 @@ clean-dist:
 	rm -f -r dist
 
 dev: clean-dist
-	docker compose down app
+	docker compose down
 	docker compose up -d db
 
 up:
