@@ -1,20 +1,17 @@
 import UserDto from "../services/users/dto/UserDto";
 import UserService from "../services/users";
 import { constants } from "http2";
-
+import {  Request, Response ,NextFunction, } from "express";
 import {
-  USER_AUTH_ACCESS_TOKEN_COOKIE_KEY,
   USER_AUTH_COOKIES_CONFIG,
   USER_AUTH_REFRESH_TOKEN_COOKIE_KEY
 } from "../constants";
-import { validateUserAccessToken } from "../services/users/auth";
 
 
 
-// @ts-ignore
-const userLogin = async (req, res, next) => {
+const userLogin = async ({body,fingerprint } : Request, res : Response, next :NextFunction) => {
   try {
-    const { body, fingerprint  } = req
+
     const { login = '', email = '', password = '' } = body
 
     if (!password) {
@@ -54,17 +51,14 @@ const userLogin = async (req, res, next) => {
 
 
 
-// @ts-ignore
-const userLogout = async (req,res) => {
+
+const userLogout = async (req : Request, res : Response, next :NextFunction) => {
   try {
     const { cookies } = req
     // const accessToken = [USER_AUTH_ACCESS_TOKEN_COOKIE_KEY]
     const refreshToken = cookies[USER_AUTH_REFRESH_TOKEN_COOKIE_KEY]
-
+    res.clearCookie( USER_AUTH_REFRESH_TOKEN_COOKIE_KEY )
     const result =   await UserService.deleteUserToken(refreshToken)
-    // TODO проверять удалился ли токен из бд?
-      res.clearCookie( USER_AUTH_REFRESH_TOKEN_COOKIE_KEY )
-
     res.send(result)
 
   }catch (e) {
@@ -74,8 +68,8 @@ const userLogout = async (req,res) => {
 
 }
 
-// @ts-ignore
- const userRegistration = async (req, res, next)  => {
+
+ const userRegistration = async (req : Request, res : Response, next :NextFunction)  => {
 
   try {
     const { body , fingerprint } = req
@@ -94,8 +88,8 @@ const userLogout = async (req,res) => {
 
 
 
-// @ts-ignore
-const updateUserAuthTokens =  async (req,res) => {
+
+const updateUserAuthTokens =  async (req : Request, res : Response, next :NextFunction) => {
   try {
     const {cookies,fingerprint} = req
     const refreshToken = cookies[USER_AUTH_REFRESH_TOKEN_COOKIE_KEY]
@@ -133,8 +127,8 @@ const updateUserAuthTokens =  async (req,res) => {
   }
 
 }
-// @ts-ignore
-const getUsers = async (req, res, next)  => {
+
+const getUsers = async (req : Request, res : Response, next :NextFunction)  => {
   try {
 
     const users =  await UserService.getUsersList()
@@ -145,8 +139,8 @@ const getUsers = async (req, res, next)  => {
   }
 
 }
-// @ts-ignore
-const getUserById = async (req, res, next)  => {
+
+const getUserById = async (req : Request, res : Response, next :NextFunction)  => {
 
   try {
 
