@@ -3,6 +3,7 @@ import UserService from "../services/users";
 import { constants } from "http2";
 import {  Request, Response ,NextFunction, } from "express";
 import {
+  USER_AUTH_ACCESS_TOKEN_COOKIE_KEY,
   USER_AUTH_COOKIES_CONFIG,
   USER_AUTH_REFRESH_TOKEN_COOKIE_KEY
 } from "../constants";
@@ -39,6 +40,7 @@ const userLogin = async ({body,fingerprint } : Request, res : Response, next :Ne
 
     const tokens = await UserService.generateUserAuthTokens(new UserDto(user),fingerprint)
     res.cookie(USER_AUTH_REFRESH_TOKEN_COOKIE_KEY, tokens.refreshToken, USER_AUTH_COOKIES_CONFIG)
+    res.cookie(USER_AUTH_ACCESS_TOKEN_COOKIE_KEY,tokens.accessToken,{httpOnly:false})
     res.send({ ...new UserDto(user), tokens })
 
     // res.signedCookies
@@ -55,13 +57,15 @@ const userLogin = async ({body,fingerprint } : Request, res : Response, next :Ne
 const userLogout = async (req : Request, res : Response, next :NextFunction) => {
   try {
     const { cookies } = req
-    // const accessToken = [USER_AUTH_ACCESS_TOKEN_COOKIE_KEY]
+
     const refreshToken = cookies[USER_AUTH_REFRESH_TOKEN_COOKIE_KEY]
     res.clearCookie( USER_AUTH_REFRESH_TOKEN_COOKIE_KEY )
+    res.clearCookie( USER_AUTH_ACCESS_TOKEN_COOKIE_KEY )
+
     const result =   await UserService.deleteUserToken(refreshToken)
     res.send(result)
 
-  }catch (e) {
+  } catch (e) {
     console.log(e);
     res.sendStatus(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR);
   }
@@ -118,6 +122,7 @@ const updateUserAuthTokens =  async (req : Request, res : Response, next :NextFu
     const tokens = await UserService.generateUserAuthTokens(new UserDto(user),fingerprint)
 
     res.cookie(USER_AUTH_REFRESH_TOKEN_COOKIE_KEY,tokens.refreshToken,USER_AUTH_COOKIES_CONFIG)
+    res.cookie(USER_AUTH_ACCESS_TOKEN_COOKIE_KEY,tokens.accessToken,{httpOnly:false})
 
     res.send( {...new UserDto(user),tokens}  )
 
