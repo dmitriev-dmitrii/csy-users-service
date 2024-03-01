@@ -52,6 +52,11 @@ const  UserSchema = new Schema({
         type:String,
         required:[true,"password Required"]
     },
+    avatarImg:{
+        type:String,
+        default: ""
+    },
+
 },options);
 
 // https://mongoosejs.com/docs/api/error.html

@@ -8,7 +8,22 @@ import {
   USER_AUTH_REFRESH_TOKEN_COOKIE_KEY
 } from "../constants";
 
+const userRegistration = async (req : Request, res : Response, next :NextFunction)  => {
 
+  try {
+    const { body , fingerprint } = req
+    const user = await UserService.createUser(body)
+    const tokens   =  await UserService.generateUserAuthTokens(new UserDto(user),fingerprint)
+
+    res.cookie(USER_AUTH_REFRESH_TOKEN_COOKIE_KEY,tokens.refreshToken,USER_AUTH_COOKIES_CONFIG)
+    res.send(  {...new UserDto(user),tokens} )
+  }
+  catch (err) {
+    res.status(constants.HTTP_STATUS_BAD_REQUEST)
+    res.send( err )
+  }
+
+}
 
 const userLogin = async ({body,fingerprint } : Request, res : Response, next :NextFunction) => {
   try {
@@ -38,7 +53,7 @@ const userLogin = async ({body,fingerprint } : Request, res : Response, next :Ne
           res.status(constants.HTTP_STATUS_UNAUTHORIZED).send('неверный логин или пароль')
     }
 
-    const tokens = await UserService.generateUserAuthTokens(new UserDto(user),fingerprint)
+    const tokens = await UserService.generateUserAuthTokens(user,fingerprint)
     res.cookie(USER_AUTH_REFRESH_TOKEN_COOKIE_KEY, tokens.refreshToken, USER_AUTH_COOKIES_CONFIG)
     res.cookie(USER_AUTH_ACCESS_TOKEN_COOKIE_KEY,tokens.accessToken,{httpOnly:false})
     res.send({ ...new UserDto(user), tokens })
@@ -50,8 +65,6 @@ const userLogin = async ({body,fingerprint } : Request, res : Response, next :Ne
   }
 
 }
-
-
 
 
 const userLogout = async (req : Request, res : Response, next :NextFunction) => {
@@ -71,26 +84,6 @@ const userLogout = async (req : Request, res : Response, next :NextFunction) => 
   }
 
 }
-
-
- const userRegistration = async (req : Request, res : Response, next :NextFunction)  => {
-
-  try {
-    const { body , fingerprint } = req
-    const user = await UserService.createUser(body)
-    const tokens   =  await UserService.generateUserAuthTokens(new UserDto(user),fingerprint)
-
-    res.cookie(USER_AUTH_REFRESH_TOKEN_COOKIE_KEY,tokens.refreshToken,USER_AUTH_COOKIES_CONFIG)
-    res.send(  {...new UserDto(user),tokens} )
-  }
-  catch (err) {
-    res.status(constants.HTTP_STATUS_BAD_REQUEST)
-    res.send( err )
-  }
-
-}
-
-
 
 
 const updateUserAuthTokens =  async (req : Request, res : Response, next :NextFunction) => {
@@ -165,7 +158,6 @@ const getUserById = async (req : Request, res : Response, next :NextFunction)  =
 
   }
   catch (err) {
-    console.log(err);
     res.sendStatus(constants.HTTP_STATUS_NOT_FOUND)
   }
 
