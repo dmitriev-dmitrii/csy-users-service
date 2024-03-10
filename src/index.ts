@@ -6,10 +6,11 @@ import cors from 'cors'
 import dataBaseConnect from "../config/dataBaseConnect";
 import loggerMiddleware from "./middlewares/loggerMiddleware";
 import errorMiddleware from "./middlewares/errorMiddlware";
-import users from "./routes/users";
+import usersAuthRouter from "./routes/usersAuthRoutes";
 
 import authMiddleware from "./middlewares/authMiddleware";
 import cookieParser  from  'cookie-parser';
+import usersListRouter from "./routes/usersListRoutes";
 // import swaggerUi from 'swagger-ui-express';
 
 const app = express();
@@ -28,7 +29,8 @@ const appRouterPrefix = '/api/users'
 
 app.use(loggerMiddleware);
 
-app.use(`${appRouterPrefix}`, users);
+app.use(`${appRouterPrefix}/auth`, usersAuthRouter);
+app.use(`${appRouterPrefix}/list`, usersListRouter);
 
 app.use(errorMiddleware);
 

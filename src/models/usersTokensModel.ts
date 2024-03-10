@@ -1,5 +1,5 @@
 import mongoose, { ObjectId, Schema } from "mongoose";
-import { UserDocumentI } from "./users";
+import { UserDocumentI } from "./usersModel";
 
 
 const options = {

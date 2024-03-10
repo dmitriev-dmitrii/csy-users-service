@@ -1,5 +1,5 @@
 import { ObjectId } from "mongoose";
-import { UserDocumentI } from "../../../models/users";
+import { UserDocumentI } from "../../../models/usersModel";
 
 export default class UserDto {
   login:string

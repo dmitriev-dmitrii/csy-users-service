@@ -1,6 +1,6 @@
 import mongoose, { ObjectId, Schema } from "mongoose";
 import {mongooseValidationErrorsParser} from "../utils/mongooseErrParser";
-import { UserTokensInterface } from "./users-tokens";
+import { UserTokensInterface } from "./usersTokensModel";
 
 const options = {
     collection: 'users',

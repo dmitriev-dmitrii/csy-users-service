@@ -1,7 +1,7 @@
-import { UserTokensInterface, UserTokensModel } from "../../models/users-tokens";
+import { UserTokensInterface, UserTokensModel } from "../../models/usersTokensModel";
 import { ObjectId } from "mongoose";
 import UserDto from "./dto/UserDto";
-import { findUserById } from "./users";
+import { createUser, findUserByEmail, findUserById, findUserByLogin, getUsersList } from "./usersListService";
 import { comparePasswords } from "./utils/usersPasswordUtils";
 
 import { buildAccessToken, buildRefreshToken, verifyAccessToken, verifyRefreshToken } from "./utils/usersTokenUtils";
@@ -65,4 +65,13 @@ export const validateUserAccessToken = async (accessToken='') => {
     // console.log('validateUserAccessToken err',err);
       return false;
   }
+}
+
+export default {
+  createUser,
+  compareUserPasswords,
+  validateUserRefreshToken,
+  validateUserAccessToken,
+  generateUserAuthTokens,
+  deleteUserToken,
 }

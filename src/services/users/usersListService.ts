@@ -1,5 +1,5 @@
 import { ObjectId } from "mongoose";
-import { UserModel } from "../../models/users";
+import { UserModel } from "../../models/usersModel";
 import {hashPassword} from "./utils/usersPasswordUtils";
 
 export const  findUserById = async ( id:ObjectId | string)  => {
@@ -22,3 +22,9 @@ export const  createUser =  async ( {login='' ,email = "", password= ''}   ) => 
   return await UserModel.create({ password: hashedPassword, login, email })
 }
 
+export default {
+  findUserByLogin,
+  findUserById,
+  findUserByEmail,
+  getUsersList,
+}
