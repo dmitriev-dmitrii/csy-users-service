@@ -6,7 +6,7 @@ import {
   USER_AUTH_ACCESS_TOKEN_COOKIE_KEY,
   USER_AUTH_COOKIES_CONFIG,
   USER_AUTH_REFRESH_TOKEN_COOKIE_KEY
-} from "../constants";
+} from "../constants/cookiesConfig";
 import { createUser, findUserByEmail, findUserById, findUserByLogin } from "../services/users/usersListService";
 import {
   compareUserPasswords,
@@ -121,8 +121,8 @@ export  const updateUserAuthTokens =  async (req : Request, res : Response, next
 
     const tokens = await  generateUserAuthTokens(new UserDto(user),fingerprint)
 
-    res.cookie(USER_AUTH_REFRESH_TOKEN_COOKIE_KEY,tokens.refreshToken,USER_AUTH_COOKIES_CONFIG)
-    res.cookie(USER_AUTH_ACCESS_TOKEN_COOKIE_KEY,tokens.accessToken,{httpOnly:false})
+    res.cookie(USER_AUTH_REFRESH_TOKEN_COOKIE_KEY,tokens.refreshToken, USER_AUTH_COOKIES_CONFIG)
+    res.cookie(USER_AUTH_ACCESS_TOKEN_COOKIE_KEY,tokens.accessToken) //TODO поставить время
 
     res.send( {...new UserDto(user),tokens}  )
 

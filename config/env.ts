@@ -4,6 +4,7 @@ const {env} = process
 export const   USER_TOKEN_REFRESH_EXPIRES_TIME =   Number(env.USER_TOKEN_REFRESH_EXPIRES_TIME)
 export const   USER_TOKEN_ACCESS_EXPIRES_TIME =   Number(env.USER_TOKEN_ACCESS_EXPIRES_TIME)
 export const   APP_PORT =   Number(env.APP_PORT)
+export const   IS_DEV_MODE =  env.MODE === 'development'
 
 export const {
   DB_URL,
