@@ -19,7 +19,6 @@ export const buildAccessToken = (user:UserDto):string => {
 export const buildRefreshToken =   (payload:any):string => {
   const {id,login,email,fingerprintHash} = payload
   return sign({ id, login, email ,fingerprintHash}, USER_TOKEN_REFRESH_KEY, { expiresIn: USER_TOKEN_REFRESH_EXPIRES_TIME });
-
 }
 
 export const verifyAccessToken = (accessToken = ''):JwtPayload | string => {

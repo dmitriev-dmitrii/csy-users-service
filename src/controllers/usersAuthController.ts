@@ -7,11 +7,18 @@ import {
   USER_AUTH_COOKIES_CONFIG,
   USER_AUTH_REFRESH_TOKEN_COOKIE_KEY
 } from "../constants/cookiesConfig";
-import { createUser, findUserByEmail, findUserById, findUserByLogin } from "../services/users/usersListService";
+import {
+  createUser,
+  findUserByEmail,
+  findUserById,
+  findUserByLogin,
+  getUsersList
+} from "../services/users/usersListService";
 import {
   compareUserPasswords,
   deleteUserToken,
   generateUserAuthTokens,
+  getUserTokensList,
   validateUserRefreshToken
 } from "../services/users/usersAuthService";
 
@@ -20,6 +27,8 @@ export  const userRegistration = async (req : Request, res : Response, next :Nex
   try {
     const { body , fingerprint } = req
     const user = await  createUser(body)
+    // TODO
+    //  @ts-ignore
     const tokens   =  await  generateUserAuthTokens(new UserDto(user),fingerprint)
 
     res.cookie(USER_AUTH_REFRESH_TOKEN_COOKIE_KEY,tokens.refreshToken,USER_AUTH_COOKIES_CONFIG)
@@ -59,7 +68,8 @@ export  const userLogin = async ({body,fingerprint } : Request, res : Response, 
     if (!isEqualPasswords) {
           res.status(constants.HTTP_STATUS_UNAUTHORIZED).send('неверный логин или пароль')
     }
-
+    // TODO
+    //  @ts-ignore
     const tokens = await  generateUserAuthTokens(user,fingerprint)
     res.cookie(USER_AUTH_REFRESH_TOKEN_COOKIE_KEY, tokens.refreshToken, USER_AUTH_COOKIES_CONFIG)
     res.cookie(USER_AUTH_ACCESS_TOKEN_COOKIE_KEY,tokens.accessToken,{httpOnly:false})
@@ -118,11 +128,12 @@ export  const updateUserAuthTokens =  async (req : Request, res : Response, next
       res.sendStatus(constants.HTTP_STATUS_UNAUTHORIZED)
       return
     }
-
+    // TODO
+    //  @ts-ignore
     const tokens = await  generateUserAuthTokens(new UserDto(user),fingerprint)
 
     res.cookie(USER_AUTH_REFRESH_TOKEN_COOKIE_KEY,tokens.refreshToken, USER_AUTH_COOKIES_CONFIG)
-    res.cookie(USER_AUTH_ACCESS_TOKEN_COOKIE_KEY,tokens.accessToken) //TODO поставить время
+    res.cookie(USER_AUTH_ACCESS_TOKEN_COOKIE_KEY,tokens.accessToken) //TODO поставить время куки
 
     res.send( {...new UserDto(user),tokens}  )
 
@@ -132,8 +143,41 @@ export  const updateUserAuthTokens =  async (req : Request, res : Response, next
   }
 
 }
+export  const getUserSessions =  async (req : Request, res : Response, next :NextFunction) => {
+
+    try {
+
+      const { userId } = req.params
+
+      res.send( await  getUserTokensList(userId) )
+
+    } catch (err) {
+      res.send( [] )
+    }
+
+}
+
+export  const deleteAllUserSessions =  async (req : Request, res : Response, next :NextFunction) => {
+  try {
+    // const {cookies,fingerprint} = req
+    // const refreshToken = cookies[USER_AUTH_REFRESH_TOKEN_COOKIE_KEY]
+
+    // if (!user) {
+    //   res.sendStatus(constants.HTTP_STATUS_FORBIDDEN)
+    //   return
+    // }
+    //
+    // res.send( {...new UserDto(user),tokens}  )
+
+  }catch (err) {
+    // console.log(err);
+    // res.sendStatus(constants.HTTP_STATUS_UNAUTHORIZED)
+  }
+
+}
 
 export default {
+  getUserSessions,
   userRegistration,
   userLogin,
   userLogout,

@@ -9,6 +9,6 @@ const usersAuthRouter = Router()
 
  usersAuthRouter.post('/logout',  userLogout);
 
- usersAuthRouter.put('/refresh-token', updateUserAuthTokens );
+ usersAuthRouter.put('/refresh-tokens', updateUserAuthTokens );
 
 export  default  usersAuthRouter;

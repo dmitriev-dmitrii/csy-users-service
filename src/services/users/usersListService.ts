@@ -1,6 +1,5 @@
 import { ObjectId } from "mongoose";
-import { UserModel } from "../../models/usersModel";
-import {hashPassword} from "./utils/usersPasswordUtils";
+import { UserModel, UserRequiredToSaveFields } from "../../models/usersModel";
 
 export const  findUserById = async ( id:ObjectId | string)  => {
       return UserModel.findById(id);
@@ -15,11 +14,9 @@ export const  getUsersList =  async ( ) => {
   return  UserModel.find()
 }
 
-export const  createUser =  async ( {login='' ,email = "", password= ''}   ) => {
+export const  createUser =  async ( payload:UserRequiredToSaveFields ) => {
 
-  const hashedPassword =  await hashPassword(password)
-
-  return await UserModel.create({ password: hashedPassword, login, email })
+  return await UserModel.create(payload)
 }
 
 export default {

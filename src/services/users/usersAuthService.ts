@@ -1,22 +1,32 @@
-import { UserTokensInterface, UserTokensModel } from "../../models/usersTokensModel";
-import { ObjectId } from "mongoose";
+import {
+  UserTokensInterface,
+  UserTokensModel,
+  UserTokensToSaveFields
+} from "../../models/usersTokensModel";
 import UserDto from "./dto/UserDto";
-import { createUser, findUserByEmail, findUserById, findUserByLogin, getUsersList } from "./usersListService";
+import { createUser } from "./usersListService";
 import { comparePasswords } from "./utils/usersPasswordUtils";
 
 import { buildAccessToken, buildRefreshToken, verifyAccessToken, verifyRefreshToken } from "./utils/usersTokenUtils";
+import { FingerprintResult, } from "express-fingerprint";
+import { FingerprintResultComponent } from "express-fingerprint/lib/types";
 
 
-export const generateUserAuthTokens  = async (user:UserDto,fingerprint:any)=> {
+const MAX_USER_SESSIONS_COUNT = 5
+// TODO сделать ограничение по количеству сессий
 
-  const {id} = user
-  const { hash  } = fingerprint
+export const generateUserAuthTokens  = async (user:UserDto,fingerprint:FingerprintResult)=> {
+
+  const {id:userId} = user
+  const {hash:fingerprintHash,components} = fingerprint
+
+  const { geoip:userGeo, useragent:userAgent } = components  as FingerprintResultComponent
+
 
   const accessToken = buildAccessToken(user)
-  const refreshToken = buildRefreshToken({...user,...{fingerprintHash:hash}})
+  const refreshToken = buildRefreshToken({...user,...{fingerprintHash , userGeo ,userAgent }})
 
-
-  await saveUserRefreshToken({userId:id, fingerprintHash :hash, refreshToken})
+  await saveUserRefreshToken({userId, fingerprintHash ,userGeo ,userAgent , refreshToken} )
 
   return {
     accessToken,
@@ -24,18 +34,19 @@ export const generateUserAuthTokens  = async (user:UserDto,fingerprint:any)=> {
   }
 }
 
-export const saveUserRefreshToken  = async (payload : {userId: ObjectId, refreshToken:string, fingerprintHash:string})=> {
+export const saveUserRefreshToken  = async ( payload:UserTokensToSaveFields   )=> {
+
   const {userId, refreshToken, fingerprintHash} = payload
   const tokenData : UserTokensInterface | null = await UserTokensModel.findOne({fingerprintHash,userId})
 
   if (!tokenData) {
-    await UserTokensModel.create({ userId, refreshToken , fingerprintHash })
+    await UserTokensModel.create(payload)
     return
   }
   await   UserTokensModel.updateOne({fingerprintHash , userId} , {refreshToken});
 }
 
-export const  compareUserPasswords = async (plaintPassword:string,hashedPassword:string)=>{
+export const  compareUserPasswords = async (plaintPassword:string,hashedPassword:string)=> {
     return  comparePasswords(plaintPassword  ,hashedPassword)
 }
 export const deleteUserToken = async ( refreshToken='' ) => {
@@ -44,12 +55,11 @@ export const deleteUserToken = async ( refreshToken='' ) => {
 }
 
 export const validateUserRefreshToken = async ( refreshToken='') => {
-
+  // TODO
   // @ts-ignore
   const {fingerprintHash}  = verifyRefreshToken(refreshToken)
   // выбрасывает ошибку если токен протух
   return  UserTokensModel.findOne({refreshToken,fingerprintHash})
-
 }
 export const validateUserAccessToken = async (accessToken='') => {
   try {
@@ -66,7 +76,10 @@ export const validateUserAccessToken = async (accessToken='') => {
       return false;
   }
 }
+export const getUserTokensList = async ( userId = '' ) => {
 
+  return  UserTokensModel.find({userId})
+}
 export default {
   createUser,
   compareUserPasswords,
@@ -74,4 +87,5 @@ export default {
   validateUserAccessToken,
   generateUserAuthTokens,
   deleteUserToken,
+  getUserTokensList,
 }

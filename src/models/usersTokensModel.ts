@@ -1,6 +1,33 @@
 import mongoose, { ObjectId, Schema } from "mongoose";
-import { UserDocumentI } from "./usersModel";
+import { UserDocumentInterface } from "./usersModel";
 
+import { mergeWith } from "lodash";
+const  userAgentCustomizer = (objValue:'', srcValue:'') => {
+    if (!objValue) {
+        return '';
+    }
+}
+const userAgentDefault = {
+    browser: {
+        family: '',
+        version: '',
+    },
+    device: {
+        family: '',
+        version: '',
+    },
+    os: {
+        family: '',
+        major: '',
+        minor: '',
+    },
+};
+
+const userGeoDefault = {
+    country: "",
+    region: "",
+    city: ""
+}
 
 const options = {
     collection: 'users-tokens',
@@ -32,17 +59,35 @@ const  UserTokenSchema = new Schema({
         required: true,
         type:String,
     },
+    userAgent:{
+        type: typeof userAgentDefault,
+    },
+    userGeo:{
+        type: typeof userAgentDefault,
+    }
+
+
 },options);
 
 
 export interface UserTokensInterface {
-    'refreshToken':string,
-    readonly userId: ObjectId,
     readonly 'id':ObjectId,
     readonly '_id':ObjectId,
-    readonly "createdAt": string,
-    readonly  "updatedAt": string,
-    readonly  fingerprintHash:string,
+    readonly createdAt: string,
+    readonly updatedAt: string,
+
+    'refreshToken':string,
+    readonly userId: ObjectId,
+    readonly fingerprintHash:string,
+    readonly userAgent: typeof userAgentDefault,
+    readonly userGeo: typeof userAgentDefault,
 }
+
+export type UserTokensToSaveFields = Required<Pick<UserTokensInterface,'refreshToken' |'fingerprintHash' |  'userId'>> & Pick<UserTokensInterface ,'userAgent' | 'userGeo' >;
+UserTokenSchema.pre('save', async function (next) {
+    this.userAgent = mergeWith( userAgentDefault,this.userAgent ,userAgentCustomizer)
+    this.userGeo = mergeWith( userGeoDefault,this.userGeo ,userAgentCustomizer)
+    next();
+});
 export const UserTokensModel = mongoose.model<UserTokensInterface>('UsersToken', UserTokenSchema);
 

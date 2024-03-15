@@ -7,4 +7,5 @@ export const USER_AUTH_COOKIES_CONFIG =
   {
   // maxAge: USER_TOKEN_REFRESH_EXPIRES_TIME ,
   httpOnly:true,
+  // path: '/api/users/auth'
   }

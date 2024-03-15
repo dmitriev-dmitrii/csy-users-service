@@ -1,5 +1,5 @@
 import { ObjectId } from "mongoose";
-import { UserDocumentI } from "../../../models/usersModel";
+import { UserDocumentInterface } from "../../../models/usersModel";
 
 export default class UserDto {
   login:string
@@ -8,7 +8,7 @@ export default class UserDto {
   createdAt: string
   updatedAt: string
 
-  constructor(user:UserDocumentI ) {
+  constructor(user:UserDocumentInterface ) {
     this.id = user._id
     this.login = user.login
     this.email  = user.email

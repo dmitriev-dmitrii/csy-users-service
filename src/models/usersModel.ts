@@ -1,6 +1,7 @@
 import mongoose, { ObjectId, Schema } from "mongoose";
 import {mongooseValidationErrorsParser} from "../utils/mongooseErrParser";
 import { UserTokensInterface } from "./usersTokensModel";
+import { hashPassword } from "../services/users/utils/usersPasswordUtils";
 
 const options = {
     collection: 'users',
@@ -63,8 +64,18 @@ const  UserSchema = new Schema({
 // https://mongoosejs.com/docs/middleware.html
 
 
-// @ts-ignore
 
+UserSchema.pre('save', async function (next) {
+    if (!this.isModified('password'))
+    {
+        return next();
+    }
+
+    this.password = await  hashPassword(this.password);
+    next();
+});
+
+// @ts-ignore
 UserSchema.post('validate', (err, _ , next) => {
 
     if(err.name === 'ValidationError') {
@@ -76,7 +87,7 @@ UserSchema.post('validate', (err, _ , next) => {
     next()
 });
 
-export interface UserDocumentI {
+export interface UserDocumentInterface {
     readonly  '_id': ObjectId
     readonly  'id': ObjectId
     login: string,
@@ -87,5 +98,8 @@ export interface UserDocumentI {
     readonly  "updatedAt": string
 }
 
-export const UserModel = mongoose.model<UserDocumentI>('User', UserSchema);
+
+export type UserRequiredToSaveFields = Required<Pick<UserDocumentInterface,'login' |'email'| 'password'>>;
+
+export const UserModel = mongoose.model<UserDocumentInterface>('User', UserSchema);
 
